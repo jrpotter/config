@@ -1,4 +1,4 @@
-" Dein Plugin Manager
+" vim-plug Plugin Manager
 " ===================================================
 
 if &compatible
