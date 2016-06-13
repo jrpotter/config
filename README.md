@@ -8,3 +8,4 @@ Included:
 * Neovim
 * Termite
 * ZSH
+* LaTeX (MathJax)
