@@ -1,4 +1,4 @@
-" vim-plug Plugin Manager
+" Dein Plugin Manager
 " ===================================================
 
 if &compatible
@@ -10,6 +10,7 @@ call plug#begin('~/.config/nvim/plugged')
 Plug 'chrisbra/csv.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'ervandew/supertab'
+Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'kien/ctrlp.vim'
 Plug 'lervag/vimtex'
 Plug 'majutsushi/tagbar'
@@ -79,13 +80,38 @@ augroup END
 let g:airline_powerline_fonts = 1
 
 
+" Tagbar
+" ===================================================
+" Note you must use exuberant ctags for this to work.
+" This can be installed from ctags.sourceforge.net
+
+nmap <F8> :TagbarToggle<CR>
+
+
 " Mappings
 " ===================================================
 
+" Leader
+let mapleader = " "
+
+" Escaping
 noremap <NUL> <ESC>
 inoremap <NUL> <ESC>
 vnoremap <NUL> <ESC>
 cnoremap <NUL> <C-c>
+
+" Natural editor movement
+nnoremap j gj
+nnoremap k gk
+
+" Window Navigation
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+
+" Allows use of w!! to edit file that required root afte ropening without sudo
+cmap w!! w !sudo tee % >/dev/null
 
 
 " Miscellaneous Settings

@@ -4,7 +4,15 @@
 HISTFILE=~/.zsh_history
 HISTSIZE=1000
 SAVEHIST=1000
+
+
+# ZSH Bindings
+# ==================================================
+
 bindkey -v
+bindkey '^R' history-incremental-search-backward
+bindkey '^S' history-incremental-search-forward
+bindkey -M viins '^ ' vi-cmd-mode
 
 
 # Completion
@@ -19,13 +27,17 @@ compinit
 # Environment Variables
 # ==================================================
 
+alias su='su -s /bin/zsh'
+alias ls='ls --color=auto'
+alias ll='ls -alF'
+alias la='ls -A'
+alias l='ls -CF'
+alias grep='grep --color=auto'
+
+export EDITOR='nvim'
 export TERM='xterm-256color'
-
-# Added by Miniconda3 3.19.0 installer
-export PATH="/home/jrpotter/.miniconda3/bin:$PATH"
-
-# Path of powerline
-export POWERLINE_PATH=/home/jrpotter/.miniconda3/lib/python3.5/site-packages/powerline
+export PATH=/home/jrpotter/.miniconda3/bin:$PATH
+export POWERLINE_PATH=/usr/lib/python3.5/site-packages/powerline
 
 
 # Multiplexer
@@ -44,8 +56,3 @@ if [[ -r $POWERLINE_PATH/bindings/zsh/powerline.zsh ]]; then
     source $POWERLINE_PATH/bindings/zsh/powerline.zsh
 fi
 
-
-# Aliases
-# ==================================================
-
-alias su="su -s /bin/zsh"
