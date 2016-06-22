@@ -1,4 +1,9 @@
-" Dein Plugin Manager
+" Leader
+" ===================================================
+let mapleader = " "
+
+
+" vim-plug 
 " ===================================================
 
 if &compatible
@@ -7,11 +12,12 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
+Plug 'bling/vim-bufferline'
 Plug 'chrisbra/csv.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'ervandew/supertab'
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
-Plug 'kien/ctrlp.vim'
+Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'lervag/vimtex'
 Plug 'majutsushi/tagbar'
 Plug 'neovimhaskell/haskell-vim'
@@ -80,6 +86,15 @@ augroup END
 let g:airline_powerline_fonts = 1
 
 
+" Vim Bufferline
+" ===================================================
+
+let g:bufferline_echo = 0
+autocmd VimEnter *
+    \ let &statusline='%{bufferline#refresh_status()}'
+    \ .bufferline#get_status_string()
+
+
 " Tagbar
 " ===================================================
 " Note you must use exuberant ctags for this to work.
@@ -88,11 +103,15 @@ let g:airline_powerline_fonts = 1
 nmap <F8> :TagbarToggle<CR>
 
 
-" Mappings
+" FZF (Fuzzy Finder)
 " ===================================================
 
-" Leader
-let mapleader = " "
+" Try to emulate ctrl-p
+nmap <C-p> :FZF<CR>
+
+
+" Mappings
+" ===================================================
 
 " Escaping
 noremap <NUL> <ESC>
@@ -104,19 +123,31 @@ cnoremap <NUL> <C-c>
 nnoremap j gj
 nnoremap k gk
 
-" Window Navigation
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
-
 " Allows use of w!! to edit file that required root afte ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
+
+
+" Buffers
+" ===================================================
+
+set hidden
+
+" Create new tabs and cycle
+nmap <Leader>bt :enew<CR>
+nmap <Leader>bn :bnext<CR>
+nmap <Leader>bp :bprevious<CR>
+
+" Quit current buffer and switch to previous
+nmap <Leader>bq :bp <BAR> bd #<CR>
+
+" Show all buffers
+nmap <Leader>bl :ls<CR>
 
 
 " Miscellaneous Settings
 " ===================================================
 
+set showcmd
 set number
 set expandtab
 set tabstop=4

@@ -10,8 +10,6 @@ SAVEHIST=1000
 # ==================================================
 
 bindkey -v
-bindkey '^R' history-incremental-search-backward
-bindkey '^S' history-incremental-search-forward
 bindkey -M viins '^ ' vi-cmd-mode
 
 
@@ -55,4 +53,10 @@ powerline-daemon -q
 if [[ -r $POWERLINE_PATH/bindings/zsh/powerline.zsh ]]; then
     source $POWERLINE_PATH/bindings/zsh/powerline.zsh
 fi
+
+
+# FZF (Fuzzy Finder)
+# ==================================================
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
