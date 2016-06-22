@@ -27,6 +27,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 
 call plug#end()
@@ -110,6 +111,34 @@ nmap <F8> :TagbarToggle<CR>
 nmap <C-p> :FZF<CR>
 
 
+" EasyMotion
+" ==================================================
+
+" Disable default mappings
+let g:EasyMotion_do_mapping = 0
+
+" Keep cursor column when moving rows
+let g:EasyMotion_startofline = 0
+
+" Enhance searching
+map / <Plug>(easymotion-sn)
+map ? <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+
+" Provide different highlight methods (after search)
+map n <Plug>(easymotion-next)
+map N <Plug>(easymotion-prev)
+
+" Enhance forward/backward motions
+nmap <Leader>f <Plug>(easymotion-lineforward)
+nmap <Leader>F <Plug>(easymotion-linebackward)
+
+" Line by line motions
+map s <Plug>(easymotion-overwin-f)
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+
+
 " Mappings
 " ===================================================
 
@@ -123,7 +152,7 @@ cnoremap <NUL> <C-c>
 nnoremap j gj
 nnoremap k gk
 
-" Allows use of w!! to edit file that required root afte ropening without sudo
+" Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
 
 
@@ -132,16 +161,10 @@ cmap w!! w !sudo tee % >/dev/null
 
 set hidden
 
-" Create new tabs and cycle
-nmap <Leader>bt :enew<CR>
-nmap <Leader>bn :bnext<CR>
-nmap <Leader>bp :bprevious<CR>
-
-" Quit current buffer and switch to previous
-nmap <Leader>bq :bp <BAR> bd #<CR>
-
-" Show all buffers
-nmap <Leader>bl :ls<CR>
+" Because vi-mode in zsh is set to escape with '^ ', it is necessary
+" to escape out of terminal mode in a way that does not interfere with
+" vi-mode. Thus, Alt is used for terminal related activities.
+tnoremap <A-Space> <C-\><C-n>
 
 
 " Miscellaneous Settings
