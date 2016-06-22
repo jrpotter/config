@@ -9,6 +9,6 @@ of for referencing when I end up deleting them again.
 
 Included:
 * Neovim
-* Termite
 * ZSH
+* tmux
 * LaTeX (MathJax)
