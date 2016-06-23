@@ -12,7 +12,6 @@ endif
 
 call plug#begin('~/.config/nvim/plugged')
 
-Plug 'bling/vim-bufferline'
 Plug 'chrisbra/csv.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'ervandew/supertab'
@@ -46,22 +45,47 @@ call plug#end()
 "   n... : where to save the viminfo files
 set viminfo='10,\"100,:20,%,n~/.config/nvim/.viminfo
 
+" Save the cursor position
+function! ResCur()
+    if line("'\"") <= line("$")
+        normal! g`"
+        return 1
+    endif
+endfunction
+
+" Save the folding level set previously
+if has("folding")
+    function! UnfoldCur()
+        if !&foldenable
+            return
+        endif
+        let cl = line(".")
+        if cl <= 1 | return | endif
+        let cf = foldlevel(cl)
+        let uf = foldlevel(cl -1)
+        let min = (cf > uf ? uf : cf)
+        if min
+            execute "normal!" min . "zo"
+            return 1
+        endif
+    endfunction
+endif
+
+" Restore cursor and setup folding level if possible
+augroup restoreCursor
+    autocmd!
+    if has("folding")
+        autocmd BufWinEnter * if ResCur() | call UnfoldCur() | endif
+    else
+        autocmd BufWinEnter * call ResCur()
+    endif
+augroup END
+
 
 " Vim Airline
 " ===================================================
 
 let g:airline_powerline_fonts = 1
-
-
-" Vim Bufferline
-" ===================================================
-
-" Airline defaults to showing buffers on airline and vim-bufferline
-" shows on command line. Changes vim-bufferline to show just on airline
-let g:bufferline_echo = 0
-autocmd VimEnter *
-    \ let &statusline='%{bufferline#refresh_status()}'
-    \ .bufferline#get_status_string()
 
 
 " Tagbar
@@ -108,6 +132,20 @@ map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
 
 
+" Startify
+" ===================================================
+
+let g:startify_custom_header = [
+            \ '     ________   ___      ___ ___  _____ ______            ', 
+            \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
+            \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
+            \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
+            \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
+            \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
+            \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
+            \ ]
+
+
 " Mappings
 " ===================================================
 
@@ -134,6 +172,14 @@ set hidden
 " to escape out of terminal mode in a way that does not interfere with
 " vi-mode. Thus, Alt is used for terminal related activities.
 tnoremap <A-Space> <C-\><C-n>
+tnoremap <A-h> <C-\><C-n><C-w>h
+tnoremap <A-j> <C-\><C-n><C-w>j
+tnoremap <A-k> <C-\><C-n><C-w>k
+tnoremap <A-l> <C-\><C-n><C-w>l
+nnoremap <A-h> <C-w>h
+nnoremap <A-j> <C-w>j
+nnoremap <A-k> <C-w>k
+nnoremap <A-l> <C-w>l
 
 
 " Folding
@@ -142,20 +188,6 @@ tnoremap <A-Space> <C-\><C-n>
 set foldcolumn=3
 set foldlevel=99
 set foldmethod=syntax
-
-
-" Startify
-" ===================================================
-
-let g:startify_custom_header = [
-            \ '     ________   ___      ___ ___  _____ ______            ', 
-            \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
-            \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
-            \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
-            \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
-            \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
-            \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
-            \ ]
 
 
 " Miscellaneous Settings
