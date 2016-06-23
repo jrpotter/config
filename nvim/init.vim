@@ -18,8 +18,10 @@ Plug 'easymotion/vim-easymotion'
 Plug 'ervandew/supertab'
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'junegunn/fzf', { 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 Plug 'lervag/vimtex'
 Plug 'majutsushi/tagbar'
+Plug 'mhinz/vim-startify'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'scrooloose/syntastic'
 Plug 'tmhedberg/SimpylFold'
@@ -44,42 +46,6 @@ call plug#end()
 "   n... : where to save the viminfo files
 set viminfo='10,\"100,:20,%,n~/.config/nvim/.viminfo
 
-" Save the cursor position
-function! ResCur()
-    if line("'\"") <= line("$")
-        normal! g`"
-        return 1
-    endif
-endfunction
-
-" We save the folding level set previously
-if has("folding")
-    function! UnfoldCur()
-        if !&foldenable
-            return
-        endif
-        let cl = line(".")
-        if cl <= 1 | return | endif
-        let cf = foldlevel(cl)
-        let uf = foldlevel(cl - 1)
-        let min = (cf > uf ? uf : cf)
-        if min
-            execute "normal!" min . "zo"
-            return 1
-        endif
-    endfunction
-endif
-
-" Restore the cursor and setup folding level if possible
-augroup restoreCursor
-    autocmd!
-    if has("folding")
-        autocmd BufWinEnter * if ResCur() | call UnfoldCur() | endif
-    else
-        autocmd BufWinEnter * call ResCur()
-    endif
-augroup END
-
 
 " Vim Airline
 " ===================================================
@@ -90,6 +56,8 @@ let g:airline_powerline_fonts = 1
 " Vim Bufferline
 " ===================================================
 
+" Airline defaults to showing buffers on airline and vim-bufferline
+" shows on command line. Changes vim-bufferline to show just on airline
 let g:bufferline_echo = 0
 autocmd VimEnter *
     \ let &statusline='%{bufferline#refresh_status()}'
@@ -109,6 +77,7 @@ nmap <F8> :TagbarToggle<CR>
 
 " Try to emulate ctrl-p
 nmap <C-p> :FZF<CR>
+nmap <Leader><C-p> :Buffers<CR>
 
 
 " EasyMotion
@@ -167,6 +136,28 @@ set hidden
 tnoremap <A-Space> <C-\><C-n>
 
 
+" Folding
+" ===================================================
+
+set foldcolumn=3
+set foldlevel=99
+set foldmethod=syntax
+
+
+" Startify
+" ===================================================
+
+let g:startify_custom_header = [
+            \ '     ________   ___      ___ ___  _____ ______            ', 
+            \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
+            \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
+            \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
+            \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
+            \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
+            \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
+            \ ]
+
+
 " Miscellaneous Settings
 " ===================================================
 
@@ -175,8 +166,6 @@ set number
 set expandtab
 set tabstop=4
 set shiftwidth=4
-set foldlevel=99
-set foldmethod=syntax
 
 syntax on
 
