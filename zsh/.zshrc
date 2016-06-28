@@ -34,7 +34,7 @@ alias grep='grep --color=auto'
 
 export EDITOR='nvim'
 export TERM='xterm-256color'
-export PATH=/home/jrpotter/.miniconda3/bin:$PATH
+export NVIM_DIR=$HOME/.config/nvim
 export POWERLINE_PATH=/usr/lib/python3.5/site-packages/powerline
 
 

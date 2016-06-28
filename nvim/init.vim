@@ -145,6 +145,8 @@ let g:startify_custom_header = [
             \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
             \ ]
 
+let g:startify_session_dir = '$NVIM_DIR/sessions'
+
 
 " Mappings
 " ===================================================
@@ -172,14 +174,26 @@ set hidden
 " to escape out of terminal mode in a way that does not interfere with
 " vi-mode. Thus, Alt is used for terminal related activities.
 tnoremap <A-Space> <C-\><C-n>
-tnoremap <A-h> <C-\><C-n><C-w>h
-tnoremap <A-j> <C-\><C-n><C-w>j
-tnoremap <A-k> <C-\><C-n><C-w>k
-tnoremap <A-l> <C-\><C-n><C-w>l
-nnoremap <A-h> <C-w>h
-nnoremap <A-j> <C-w>j
-nnoremap <A-k> <C-w>k
-nnoremap <A-l> <C-w>l
+
+
+" Sessions
+" ===================================================
+" Convenience function to avoid writing NVIM_DIR repeatedly
+
+" Save Session As
+function SSA(name)
+    let path = $NVIM_DIR . '/sessions/' . a:name
+    exec 'mks! ' . path
+endfunction
+
+" Load Saved Session
+function LSS(name)
+    let path = $NVIM_DIR . '/sessions/' . a:name
+    exec 'source ' . path
+endfunction
+
+command -nargs=1 SSA :call SSA(<f-args>)
+command -nargs=1 LSS :call LSS(<f-args>)
 
 
 " Folding
@@ -198,6 +212,7 @@ set number
 set expandtab
 set tabstop=4
 set shiftwidth=4
+set splitright
 
 syntax on
 
