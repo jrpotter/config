@@ -148,6 +148,13 @@ let g:startify_custom_header = [
 let g:startify_session_dir = '$NVIM_DIR/sessions'
 
 
+" NetRW
+" ===================================================
+
+" Add numbers to NetRW
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+
+
 " Mappings
 " ===================================================
 
