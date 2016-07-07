@@ -93,8 +93,8 @@ let g:airline_powerline_fonts = 1
 " ===================================================
 
 " Try to emulate ctrl-p
-nmap <C-p> :FZF<CR>
-nmap <Leader><C-p> :Buffers<CR>
+nmap <Leader><C-p> :FZF<CR>
+nmap <Leader><C-b> :Buffers<CR>
 nmap <Leader><C-t> :Tags<CR>
 
 

@@ -42,7 +42,7 @@ export POWERLINE_PATH=/usr/lib/python3.5/site-packages/powerline
 # ==================================================
 
 if command -v tmux > /dev/null; then
-    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux
+    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux new-session -A -s main
 fi
 
 
