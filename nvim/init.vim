@@ -10,7 +10,7 @@ if &compatible
     set nocompatible
 endif
 
-call plug#begin('~/.config/nvim/plugged')
+call plug#begin('$NVIM_DIR/plugged')
 
 Plug 'chrisbra/csv.vim'
 Plug 'easymotion/vim-easymotion'
@@ -19,7 +19,6 @@ Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'lervag/vimtex'
-Plug 'majutsushi/tagbar'
 Plug 'mhinz/vim-startify'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'scrooloose/syntastic'
@@ -30,6 +29,8 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
+Plug 'xolox/vim-easytags'
+Plug 'xolox/vim-misc'
 
 call plug#end()
 
@@ -88,20 +89,13 @@ augroup END
 let g:airline_powerline_fonts = 1
 
 
-" Tagbar
-" ===================================================
-" Note you must use exuberant ctags for this to work.
-" This can be installed from ctags.sourceforge.net
-
-nmap <F8> :TagbarToggle<CR>
-
-
 " FZF (Fuzzy Finder)
 " ===================================================
 
 " Try to emulate ctrl-p
 nmap <C-p> :FZF<CR>
 nmap <Leader><C-p> :Buffers<CR>
+nmap <Leader><C-t> :Tags<CR>
 
 
 " EasyMotion
@@ -146,6 +140,14 @@ let g:startify_custom_header = [
             \ ]
 
 let g:startify_session_dir = '$NVIM_DIR/sessions'
+
+
+" EasyTags
+" ===================================================
+
+set tags=$NVIM_DIR/vimtags
+let g:easytags_file = '$NVIM_DIR/vimtags'
+let g:easytags_async = 1
 
 
 " NetRW
