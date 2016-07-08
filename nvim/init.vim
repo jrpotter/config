@@ -1,5 +1,6 @@
 " Leader
 " ===================================================
+
 let mapleader = " "
 
 
@@ -10,18 +11,23 @@ if &compatible
     set nocompatible
 endif
 
+function! DoRemote(arg)
+    UpdateRemotePlugins
+endfunction
+
 call plug#begin('$NVIM_DIR/plugged')
 
-Plug 'chrisbra/csv.vim'
+Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'easymotion/vim-easymotion'
 Plug 'ervandew/supertab'
+Plug 'honza/vim-snippets'
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'lervag/vimtex'
 Plug 'mhinz/vim-startify'
-Plug 'neovimhaskell/haskell-vim'
-Plug 'scrooloose/syntastic'
+Plug 'neomake/neomake'
+Plug 'sirver/ultisnips'
+Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 Plug 'tmhedberg/SimpylFold'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
@@ -98,6 +104,12 @@ nmap <Leader><C-b> :Buffers<CR>
 nmap <Leader><C-t> :Tags<CR>
 
 
+" Deoplete
+" ==================================================
+
+let g:deoplete#enable_at_startup = 1
+
+
 " EasyMotion
 " ==================================================
 
@@ -147,7 +159,19 @@ let g:startify_session_dir = '$NVIM_DIR/sessions'
 
 set tags=$NVIM_DIR/vimtags
 let g:easytags_file = '$NVIM_DIR/vimtags'
+let g:easytags_auto_highlight = 0
 let g:easytags_async = 1
+
+
+" Neomake
+" ===================================================
+
+autocmd! BufWritePost * Neomake
+
+let g:neomake_cpp_enable_makers = ['gcc']
+let g:neomake_cpp_gcc_maker = {
+            \ 'exe': 'g++'
+            \ }
 
 
 " NetRW
@@ -155,6 +179,14 @@ let g:easytags_async = 1
 
 " Add numbers to NetRW
 let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+
+
+" UltiSnips
+" ===================================================
+
+let g:UltiSnipsExpandTrigger="<Tab>"
+let g:UltiSnipsJumpForwardTrigger="<C-l>"
+let g:UltiSnipsJumpBackwardTrigger="<C-h>"
 
 
 " Mappings
@@ -169,6 +201,17 @@ cnoremap <NUL> <C-c>
 " Natural editor movement
 nnoremap j gj
 nnoremap k gk
+
+" Switch Marking
+nnoremap ' `
+nnoremap ` '
+
+" Tags
+nnoremap <silent> <C-g> :ta<CR>
+
+" Insert Mode Completion Popup
+inoremap <C-j> <C-n>
+inoremap <C-k> <C-p>
 
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
