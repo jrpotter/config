@@ -1,10 +1,12 @@
-" Leader
+" Leader {{{
 " ===================================================
 
 let mapleader = " "
 
 
-" vim-plug 
+" }}}
+
+" vim-plug {{{
 " ===================================================
 
 if &compatible
@@ -17,11 +19,11 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
+Plug 'christoomey/vim-tmux-navigator'
 Plug 'ConradIrwin/vim-bracketed-paste'
-Plug 'easymotion/vim-easymotion'
-Plug 'ervandew/supertab'
 Plug 'honza/vim-snippets'
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
+Plug 'justinmk/vim-sneak'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'mhinz/vim-startify'
@@ -41,7 +43,127 @@ Plug 'xolox/vim-misc'
 call plug#end()
 
 
-" Restoration
+" }}}
+
+" Airline {{{
+" ===================================================
+
+let g:airline_powerline_fonts = 1
+
+
+" }}}
+
+" Buffers {{{
+" ===================================================
+
+set hidden
+
+" Because vi-mode in zsh is set to escape with '^ ', it is necessary
+" to escape out of terminal mode in a way that does not interfere with
+" vi-mode. Thus, Alt is used for terminal related activities.
+tnoremap <A-Space> <C-\><C-n>
+
+
+" }}}
+
+" Deoplete {{{
+" ==================================================
+
+let g:deoplete#enable_at_startup = 1
+
+
+" }}}
+
+" EasyTags {{{
+" ===================================================
+
+set tags=$NVIM_DIR/vimtags
+let g:easytags_file = '$NVIM_DIR/vimtags'
+let g:easytags_auto_highlight = 0
+let g:easytags_async = 1
+
+
+" }}}
+
+" Folding {{{
+" ===================================================
+
+set foldcolumn=3
+set foldlevel=99
+set foldmethod=syntax
+
+autocmd! FileType vim setlocal foldmethod=marker
+
+
+" }}}
+
+" FZF (Fuzzy Finder) {{{
+" ===================================================
+
+" Try to emulate ctrl-p
+nmap <Leader><C-p> :FZF<CR>
+nmap <Leader><C-b> :Buffers<CR>
+nmap <Leader><C-t> :Tags<CR>
+
+
+" }}}
+
+" Mappings {{{
+" ===================================================
+
+" Escaping
+noremap <NUL> <ESC>
+inoremap <NUL> <ESC>
+vnoremap <NUL> <ESC>
+cnoremap <NUL> <C-c>
+
+" Natural editor movement
+nnoremap j gj
+nnoremap k gk
+
+" Switch Marking
+nnoremap ' `
+nnoremap ` '
+
+" Tags
+nnoremap <silent> <C-g> :ta<CR>
+
+" Insert Mode Completion Popup
+inoremap <C-j> <C-n>
+inoremap <C-k> <C-p>
+
+" Shift Tab Backward
+inoremap <S-Tab> <C-d>
+
+" Allows use of w!! to edit file that required root after ropening without sudo
+cmap w!! w !sudo tee % >/dev/null
+
+
+" }}}
+
+" Neomake {{{
+" ===================================================
+
+autocmd! BufWritePost * Neomake
+
+let g:neomake_cpp_enable_makers = ['gcc']
+let g:neomake_cpp_gcc_maker = {
+            \ 'exe': 'g++'
+            \ }
+
+
+" }}}
+
+" NetRW {{{
+" ===================================================
+
+" Add numbers to NetRW
+let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+
+
+" }}}
+
+" Restoration {{{
 " ===================================================
 
 " Tell vim to remember certain things when exiting
@@ -89,146 +211,9 @@ augroup restoreCursor
 augroup END
 
 
-" Vim Airline
-" ===================================================
+" }}}
 
-let g:airline_powerline_fonts = 1
-
-
-" FZF (Fuzzy Finder)
-" ===================================================
-
-" Try to emulate ctrl-p
-nmap <Leader><C-p> :FZF<CR>
-nmap <Leader><C-b> :Buffers<CR>
-nmap <Leader><C-t> :Tags<CR>
-
-
-" Deoplete
-" ==================================================
-
-let g:deoplete#enable_at_startup = 1
-
-
-" EasyMotion
-" ==================================================
-
-" Disable default mappings
-let g:EasyMotion_do_mapping = 0
-
-" Keep cursor column when moving rows
-let g:EasyMotion_startofline = 0
-
-" Enhance searching
-map / <Plug>(easymotion-sn)
-map ? <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-
-" Provide different highlight methods (after search)
-map n <Plug>(easymotion-next)
-map N <Plug>(easymotion-prev)
-
-" Enhance forward/backward motions
-nmap <Leader>f <Plug>(easymotion-lineforward)
-nmap <Leader>F <Plug>(easymotion-linebackward)
-
-" Line by line motions
-map s <Plug>(easymotion-overwin-f)
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
-
-
-" Startify
-" ===================================================
-
-let g:startify_custom_header = [
-            \ '     ________   ___      ___ ___  _____ ______            ', 
-            \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
-            \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
-            \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
-            \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
-            \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
-            \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
-            \ ]
-
-let g:startify_session_dir = '$NVIM_DIR/sessions'
-
-
-" EasyTags
-" ===================================================
-
-set tags=$NVIM_DIR/vimtags
-let g:easytags_file = '$NVIM_DIR/vimtags'
-let g:easytags_auto_highlight = 0
-let g:easytags_async = 1
-
-
-" Neomake
-" ===================================================
-
-autocmd! BufWritePost * Neomake
-
-let g:neomake_cpp_enable_makers = ['gcc']
-let g:neomake_cpp_gcc_maker = {
-            \ 'exe': 'g++'
-            \ }
-
-
-" NetRW
-" ===================================================
-
-" Add numbers to NetRW
-let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
-
-
-" UltiSnips
-" ===================================================
-
-let g:UltiSnipsExpandTrigger="<Tab>"
-let g:UltiSnipsJumpForwardTrigger="<C-l>"
-let g:UltiSnipsJumpBackwardTrigger="<C-h>"
-
-
-" Mappings
-" ===================================================
-
-" Escaping
-noremap <NUL> <ESC>
-inoremap <NUL> <ESC>
-vnoremap <NUL> <ESC>
-cnoremap <NUL> <C-c>
-
-" Natural editor movement
-nnoremap j gj
-nnoremap k gk
-
-" Switch Marking
-nnoremap ' `
-nnoremap ` '
-
-" Tags
-nnoremap <silent> <C-g> :ta<CR>
-
-" Insert Mode Completion Popup
-inoremap <C-j> <C-n>
-inoremap <C-k> <C-p>
-
-" Allows use of w!! to edit file that required root after ropening without sudo
-cmap w!! w !sudo tee % >/dev/null
-
-
-" Buffers
-" ===================================================
-
-set hidden
-
-" Because vi-mode in zsh is set to escape with '^ ', it is necessary
-" to escape out of terminal mode in a way that does not interfere with
-" vi-mode. Thus, Alt is used for terminal related activities.
-tnoremap <A-Space> <C-\><C-n>
-
-
-" Sessions
+" Sessions {{{
 " ===================================================
 " Convenience function to avoid writing NVIM_DIR repeatedly
 
@@ -248,15 +233,9 @@ command -nargs=1 SSA :call SSA(<f-args>)
 command -nargs=1 LSS :call LSS(<f-args>)
 
 
-" Folding
-" ===================================================
+" }}}
 
-set foldcolumn=3
-set foldlevel=99
-set foldmethod=syntax
-
-
-" Miscellaneous Settings
+" Settings {{{
 " ===================================================
 
 set showcmd
@@ -268,3 +247,46 @@ set splitright
 
 syntax on
 
+
+" }}}
+
+" Startify {{{
+" ===================================================
+
+let g:startify_custom_header = [
+            \ '     ________   ___      ___ ___  _____ ______            ', 
+            \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
+            \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
+            \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
+            \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
+            \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
+            \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
+            \ ]
+
+let g:startify_session_dir = '$NVIM_DIR/sessions'
+
+
+" }}}
+
+" UltiSnips {{{
+" ===================================================
+
+let g:UltiSnipsExpandTrigger="<Tab>"
+let g:UltiSnipsJumpForwardTrigger="<C-l>"
+let g:UltiSnipsJumpBackwardTrigger="<C-h>"
+
+
+" }}}
+
+" Windows {{{
+" ===================================================
+
+let g:tmux_navigator_no_mappings = 1
+
+nmap <silent> <A-h> :TmuxNavigateLeft<CR>
+nmap <silent> <A-j> :TmuxNavigateDown<CR>
+nmap <silent> <A-k> :TmuxNavigateUp<CR>
+nmap <silent> <A-l> :TmuxNavigateRight<CR>
+
+
+" }}}
