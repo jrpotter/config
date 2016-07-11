@@ -101,9 +101,13 @@ autocmd! FileType vim setlocal foldmethod=marker
 " ===================================================
 
 " Try to emulate ctrl-p
-nmap <Leader><C-p> :FZF<CR>
-nmap <Leader><C-b> :Buffers<CR>
-nmap <Leader><C-t> :Tags<CR>
+nmap <silent> <C-p>b :BTags<CR>
+nmap <silent> <C-p>g :GFiles<CR>
+nmap <silent> <C-p>m :Marks<CR>
+nmap <silent> <C-p>n :Buffers<CR>
+nmap <silent> <C-p>p :FZF<CR>
+nmap <silent> <C-p>s :Snippets<CR>
+nmap <silent> <C-p>t :Tags<CR>
 
 
 " }}}
@@ -132,8 +136,17 @@ nnoremap <silent> <C-g> :ta<CR>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
 
+" Command Mode Scrolling
+cnoremap <C-h> <Left>
+cnoremap <C-k> <Up>
+cnoremap <C-l> <Right>
+cnoremap <C-j> <Down>
+
 " Shift Tab Backward
 inoremap <S-Tab> <C-d>
+
+" Highlighting
+noremap <silent> Y :noh<CR>
 
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
@@ -145,6 +158,8 @@ cmap w!! w !sudo tee % >/dev/null
 " ===================================================
 
 autocmd! BufWritePost * Neomake
+
+let g:neomake_verbose = 0
 
 let g:neomake_cpp_enable_makers = ['gcc']
 let g:neomake_cpp_gcc_maker = {
