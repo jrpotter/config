@@ -20,7 +20,6 @@ endfunction
 call plug#begin('$NVIM_DIR/plugged')
 
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'honza/vim-snippets'
 Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'justinmk/vim-sneak'
@@ -81,6 +80,8 @@ set tags=$NVIM_DIR/vimtags
 let g:easytags_file = '$NVIM_DIR/vimtags'
 let g:easytags_auto_highlight = 0
 let g:easytags_async = 1
+
+autocmd! BufRead * :UpdateTags<CR>
 
 
 " }}}
@@ -259,6 +260,10 @@ set expandtab
 set tabstop=4
 set shiftwidth=4
 set splitright
+
+set backupdir=$NVIM_DIR/backup//
+set directory=$NVIM_DIR/swap//
+set undodir=$NVIM_DIR/undo//
 
 syntax on
 
