@@ -25,6 +25,7 @@ Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'justinmk/vim-sneak'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
+Plug 'ludovicchabant/vim-gutentags'
 Plug 'mhinz/vim-startify'
 Plug 'neomake/neomake'
 Plug 'sirver/ultisnips'
@@ -36,8 +37,6 @@ Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
-Plug 'xolox/vim-easytags'
-Plug 'xolox/vim-misc'
 
 call plug#end()
 
@@ -69,19 +68,6 @@ tnoremap <A-Space> <C-\><C-n>
 " ==================================================
 
 let g:deoplete#enable_at_startup = 1
-
-
-" }}}
-
-" EasyTags {{{
-" ===================================================
-
-set tags=$NVIM_DIR/vimtags
-let g:easytags_file = '$NVIM_DIR/vimtags'
-let g:easytags_auto_highlight = 0
-let g:easytags_async = 1
-
-autocmd! BufRead * :UpdateTags<CR>
 
 
 " }}}
