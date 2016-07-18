@@ -12,6 +12,12 @@ SAVEHIST=1000
 bindkey -v
 bindkey -M viins '^ ' vi-cmd-mode
 
+# Maintain mode between commands
+accept-line() { prev_mode=$KEYMAP; zle .accept-line }
+zle-line-init() { zle -K ${prev_mode:-viins} }
+zle -N accept-line
+zle -N zle-line-init
+
 
 # Completion
 # ==================================================
