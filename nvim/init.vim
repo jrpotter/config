@@ -26,6 +26,7 @@ Plug 'justinmk/vim-sneak'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'ludovicchabant/vim-gutentags'
+Plug 'majutsushi/tagbar'
 Plug 'mhinz/vim-startify'
 Plug 'neomake/neomake'
 Plug 'sirver/ultisnips'
@@ -60,6 +61,18 @@ set hidden
 " to escape out of terminal mode in a way that does not interfere with
 " vi-mode. Thus, Alt is used for terminal related activities.
 tnoremap <A-Space> <C-\><C-n>
+
+
+" }}}
+
+" Colors {{{
+" ==================================================
+
+hi FoldColumn ctermfg=Blue ctermbg=none
+hi Visual cterm=bold ctermfg=none ctermbg=DarkBlue
+hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
+
+syntax on
 
 
 " }}}
@@ -132,7 +145,11 @@ cnoremap <C-j> <Down>
 " Shift Tab Backward
 inoremap <S-Tab> <C-d>
 
+" Folding Navigation
+noremap zk zk[z
+
 " Highlighting
+noremap <silent> & :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
 noremap <silent> Y :noh<CR>
 
 " Allows use of w!! to edit file that required root after ropening without sudo
@@ -251,7 +268,10 @@ set backupdir=$NVIM_DIR/backup//
 set directory=$NVIM_DIR/swap//
 set undodir=$NVIM_DIR/undo//
 
-syntax on
+set nf=octal,hex,alpha
+
+set updatetime=500
+set timeoutlen=1000 ttimeoutlen=0
 
 
 " }}}
@@ -270,6 +290,19 @@ let g:startify_custom_header = [
             \ ]
 
 let g:startify_session_dir = '$NVIM_DIR/sessions'
+
+
+" }}}
+
+
+" Tagbar {{{
+" ===================================================
+
+nmap <silent> <C-w>t :TagbarToggle<CR>
+
+let g:tagbar_autoshowtag = 1
+let g:tagbar_compact = 1
+let g:tagbar_show_linenumbers = 2
 
 
 " }}}
