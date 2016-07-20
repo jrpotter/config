@@ -21,7 +21,6 @@ call plug#begin('$NVIM_DIR/plugged')
 
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'honza/vim-snippets'
-Plug 'jeffkreeftmeijer/vim-numbertoggle'
 Plug 'justinmk/vim-sneak'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -36,6 +35,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
+Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 
@@ -73,6 +73,12 @@ hi Visual cterm=bold ctermfg=none ctermbg=DarkBlue
 hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
 
 syntax on
+
+
+" Commentary {{{
+" ==================================================
+
+autocmd! FileType c,cpp,cs,java setlocal commentstring=//\ %s
 
 
 " }}}
@@ -269,6 +275,8 @@ set directory=$NVIM_DIR/swap//
 set undodir=$NVIM_DIR/undo//
 
 set nf=octal,hex,alpha
+set number
+set relativenumber
 
 set updatetime=500
 set timeoutlen=1000 ttimeoutlen=0
