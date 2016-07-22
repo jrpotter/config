@@ -1,11 +1,3 @@
-" Leader {{{
-" ===================================================
-
-let mapleader = " "
-
-
-" }}}
-
 " vim-plug {{{
 " ===================================================
 
@@ -33,13 +25,20 @@ Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 Plug 'tmhedberg/SimpylFold'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-sensible'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 
 call plug#end()
+
+
+" }}}
+
+" Leader {{{
+" ===================================================
+
+let mapleader = " "
 
 
 " }}}
@@ -107,16 +106,30 @@ autocmd! FileType vim setlocal foldmethod=marker
 " ===================================================
 
 " Try to emulate ctrl-p
-nmap <silent> <C-p>b :BTags<CR>
+nmap <silent> <C-p>c :Commits<CR>
 nmap <silent> <C-p>g :GFiles<CR>
+nmap <silent> <C-p>h :History:<CR>
+nmap <silent> <C-p>l :Lines<CR>
 nmap <silent> <C-p>m :Marks<CR>
 nmap <silent> <C-p>n :Buffers<CR>
 nmap <silent> <C-p>p :FZF<CR>
-nmap <silent> <C-p>s :Snippets<CR>
+nmap <silent> <C-p>s :History/<CR>
 nmap <silent> <C-p>t :Tags<CR>
+nmap <silent> <C-p>s :Snippets<CR>
+
+" Buffer Specific
+nmap <silent> <C-m>c :Bcommits<CR>
+nmap <silent> <C-m>l :BLines<CR>
+nmap <silent> <C-p>b :BTags<CR>
 
 
 " }}}
+
+" Gutentags {{{
+" ===================================================
+
+let g:gutentags_project_root = ['tags']
+
 
 " Mappings {{{
 " ===================================================
@@ -156,7 +169,7 @@ noremap zk zk[z
 
 " Highlighting
 noremap <silent> & :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
-noremap <silent> Y :noh<CR>
+noremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
 
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
@@ -265,10 +278,14 @@ command -nargs=1 LSS :call LSS(<f-args>)
 
 set showcmd
 set number
+set smarttab
 set expandtab
 set tabstop=4
 set shiftwidth=4
 set splitright
+set autoindent
+set backspace=indent,eol,start
+set complete-=i
 
 set backupdir=$NVIM_DIR/backup//
 set directory=$NVIM_DIR/swap//
@@ -278,8 +295,21 @@ set nf=octal,hex,alpha
 set number
 set relativenumber
 
+set ttimeout
 set updatetime=500
 set timeoutlen=1000 ttimeoutlen=0
+
+set incsearch
+set laststatus=2
+set ruler
+set wildmenu
+
+set scrolloff=1
+set sidescrolloff=5
+set display+=lastline
+set autoread
+set history=1000
+set tabpagemax=50
 
 
 " }}}
