@@ -77,7 +77,7 @@ syntax on
 " Commentary {{{
 " ==================================================
 
-autocmd! FileType c,cpp,cs,java setlocal commentstring=//\ %s
+au! FileType c,cpp,cs,java setlocal commentstring=//\ %s
 
 
 " }}}
@@ -97,7 +97,7 @@ set foldcolumn=3
 set foldlevel=99
 set foldmethod=syntax
 
-autocmd! FileType vim setlocal foldmethod=marker
+au! FileType vim setlocal foldmethod=marker
 
 
 " }}}
@@ -148,9 +148,6 @@ nnoremap k gk
 nnoremap ' `
 nnoremap ` '
 
-" Tags
-nnoremap <silent> <C-g> :ta<CR>
-
 " Insert Mode Completion Popup
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
@@ -167,10 +164,6 @@ inoremap <S-Tab> <C-d>
 " Folding Navigation
 noremap zk zk[z
 
-" Highlighting
-noremap <silent> & :let @/='\<<C-R>=expand("<cword>")<CR>\>'<CR>:set hls<CR>
-noremap <silent> <C-L> :nohlsearch<C-R>=has('diff')?'<Bar>diffupdate':''<CR><CR><C-L>
-
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
 
@@ -180,7 +173,7 @@ cmap w!! w !sudo tee % >/dev/null
 " Neomake {{{
 " ===================================================
 
-autocmd! BufWritePost * Neomake
+au! BufWritePost * Neomake
 
 let g:neomake_verbose = 0
 
@@ -204,49 +197,34 @@ let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
 " Restoration {{{
 " ===================================================
 
-" Tell vim to remember certain things when exiting
-"   '10  : marks will be remembered for up to 10 previously edited files
-"   "100 : will save up to 100 lines for each register
-"   :20  : up to 20 lines of command-line history will be remembered
-"   %    : saves and restores the buffer list
-"   n... : where to save the viminfo files
-set viminfo='10,\"100,:20,%,n~/.config/nvim/.viminfo
+" Tell nvim to remember certain things when exiting
+"  '1000 : Number of files for which one saves marks
+"  f1    : Controls whether global marks are stored
+"  <500  : # of lines for each register
+"  :500  : # of lines in cmd line history
+"  @500  : # of lines to save from input line history
+"  /500  : # of lines to save from search history
+"  n     : Name used for ShaDa file
+set shada='1000,f1,<500,:500,@500,/500,n$NVIM_DIR/.shada
 
 " Save the cursor position
-function! ResCur()
-    if line("'\"") <= line("$")
-        normal! g`"
-        return 1
-    endif
+au! BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+
+
+" }}}
+
+" Search {{{
+" ===================================================
+
+function SearchUnderCursor()
+    let @/='\<' . expand("<cword>") . '\>'
+    set hls
 endfunction
 
-" Save the folding level set previously
-if has("folding")
-    function! UnfoldCur()
-        if !&foldenable
-            return
-        endif
-        let cl = line(".")
-        if cl <= 1 | return | endif
-        let cf = foldlevel(cl)
-        let uf = foldlevel(cl -1)
-        let min = (cf > uf ? uf : cf)
-        if min
-            execute "normal!" min . "zo"
-            return 1
-        endif
-    endfunction
-endif
-
-" Restore cursor and setup folding level if possible
-augroup restoreCursor
-    autocmd!
-    if has("folding")
-        autocmd BufWinEnter * if ResCur() | call UnfoldCur() | endif
-    else
-        autocmd BufWinEnter * call ResCur()
-    endif
-augroup END
+noremap <silent> * *:%s///gn<CR><C-O>
+noremap <silent> # #:%s///gn<CR><C-O>
+noremap <silent> & :call SearchUnderCursor()<CR>:%s///gn<CR><C-O>
+noremap <silent> <C-L> :noh<Bar>diffupdate<CR>
 
 
 " }}}
@@ -332,6 +310,13 @@ let g:startify_session_dir = '$NVIM_DIR/sessions'
 
 " }}}
 
+" Tags {{{
+" ===================================================
+
+nnoremap <silent> <C-g> :ta<CR>
+
+
+" }}}
 
 " Tagbar {{{
 " ===================================================
@@ -360,10 +345,10 @@ let g:UltiSnipsJumpBackwardTrigger="<C-h>"
 
 let g:tmux_navigator_no_mappings = 1
 
-nmap <silent> <A-h> :TmuxNavigateLeft<CR>
-nmap <silent> <A-j> :TmuxNavigateDown<CR>
-nmap <silent> <A-k> :TmuxNavigateUp<CR>
-nmap <silent> <A-l> :TmuxNavigateRight<CR>
+nmap <silent> <C-w>h :TmuxNavigateLeft<CR>
+nmap <silent> <C-w>j :TmuxNavigateDown<CR>
+nmap <silent> <C-w>k :TmuxNavigateUp<CR>
+nmap <silent> <C-w>l :TmuxNavigateRight<CR>
 
 
 " }}}
