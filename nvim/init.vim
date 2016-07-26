@@ -1,10 +1,6 @@
 " vim-plug {{{
 " ===================================================
 
-if &compatible
-    set nocompatible
-endif
-
 function! DoRemote(arg)
     UpdateRemotePlugins
 endfunction
@@ -18,11 +14,13 @@ Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/tagbar'
+Plug 'mbbill/undoree'
 Plug 'mhinz/vim-startify'
 Plug 'neomake/neomake'
 Plug 'sirver/ultisnips'
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 Plug 'tmhedberg/SimpylFold'
+Plug 'tpope/vim-abolish'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
@@ -148,6 +146,10 @@ nnoremap k gk
 nnoremap ' `
 nnoremap ` '
 
+" Switch Start of Line
+nnoremap 0 ^
+nnoremap ^ 0
+
 " Insert Mode Completion Popup
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
@@ -226,6 +228,9 @@ noremap <silent> # #:%s///gn<CR><C-O>
 noremap <silent> & :call SearchUnderCursor()<CR>:%s///gn<CR><C-O>
 noremap <silent> <C-L> :noh<Bar>diffupdate<CR>
 
+nmap n :norm! nzzzv<CR>
+nmap N :norm! Nzzzv<CR>
+
 
 " }}}
 
@@ -256,38 +261,24 @@ command -nargs=1 LSS :call LSS(<f-args>)
 
 set showcmd
 set number
-set smarttab
 set expandtab
 set tabstop=4
 set shiftwidth=4
 set splitright
-set autoindent
 set backspace=indent,eol,start
 set complete-=i
-
 set backupdir=$NVIM_DIR/backup//
 set directory=$NVIM_DIR/swap//
 set undodir=$NVIM_DIR/undo//
-
+set ruler
+set scrolloff=1
+set sidescrolloff=5
 set nf=octal,hex,alpha
 set number
 set relativenumber
-
 set ttimeout
 set updatetime=500
 set timeoutlen=1000 ttimeoutlen=0
-
-set incsearch
-set laststatus=2
-set ruler
-set wildmenu
-
-set scrolloff=1
-set sidescrolloff=5
-set display+=lastline
-set autoread
-set history=1000
-set tabpagemax=50
 
 
 " }}}
@@ -313,7 +304,9 @@ let g:startify_session_dir = '$NVIM_DIR/sessions'
 " Tags {{{
 " ===================================================
 
-nnoremap <silent> <C-g> :ta<CR>
+nmap <silent> <C-]> :exe "tag " . expand('<cword>')<CR>zzzv<CR>
+nmap <silent> <C-t> :exe "norm! \<C-t>zzzv"<CR>
+nmap <silent> <C-g> :ta<CR>zzzv
 
 
 " }}}
@@ -326,6 +319,14 @@ nmap <silent> <C-w>t :TagbarToggle<CR>
 let g:tagbar_autoshowtag = 1
 let g:tagbar_compact = 1
 let g:tagbar_show_linenumbers = 2
+
+
+" }}}
+
+" Undo Tree {{{
+" ===================================================
+
+nmap <silent> <C-w>u :UndotreeToggle<CR>
 
 
 " }}}
@@ -349,6 +350,11 @@ nmap <silent> <C-w>h :TmuxNavigateLeft<CR>
 nmap <silent> <C-w>j :TmuxNavigateDown<CR>
 nmap <silent> <C-w>k :TmuxNavigateUp<CR>
 nmap <silent> <C-w>l :TmuxNavigateRight<CR>
+
+nnoremap <silent> <Up> :resize -1<CR>
+nnoremap <silent> <Down> :resize +1<CR>
+nnoremap <silent> <Left> :vertical resize +1<CR>
+nnoremap <silent> <Right> :vertical resize +1<CR>
 
 
 " }}}

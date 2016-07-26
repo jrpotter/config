@@ -47,6 +47,8 @@ export NVIM_DIR=$HOME/.config/nvim
 export TMUX_DIR=$HOME/.config/tmux
 export POWERLINE_PATH=/usr/lib/python3.5/site-packages/powerline
 
+set -o ignoreeof
+
 
 # Multiplexer
 # ==================================================
