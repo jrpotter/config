@@ -14,7 +14,7 @@ Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'majutsushi/tagbar'
-Plug 'mbbill/undoree'
+Plug 'mbbill/undotree'
 Plug 'mhinz/vim-startify'
 Plug 'neomake/neomake'
 Plug 'sirver/ultisnips'
@@ -273,7 +273,6 @@ set undodir=$NVIM_DIR/undo//
 set ruler
 set scrolloff=1
 set sidescrolloff=5
-set nf=octal,hex,alpha
 set number
 set relativenumber
 set ttimeout
