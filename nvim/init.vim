@@ -150,6 +150,9 @@ nnoremap ` '
 nnoremap 0 ^
 nnoremap ^ 0
 
+" Join lines above
+nnoremap <silent> K :-1,.j<CR>
+
 " Insert Mode Completion Popup
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
@@ -260,6 +263,7 @@ command -nargs=1 LSS :call LSS(<f-args>)
 " ===================================================
 
 set showcmd
+set noshowmode
 set number
 set expandtab
 set tabstop=4
