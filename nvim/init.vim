@@ -279,9 +279,8 @@ set scrolloff=1
 set sidescrolloff=5
 set number
 set relativenumber
-set ttimeout
+set notimeout
 set updatetime=500
-set timeoutlen=1000 ttimeoutlen=0
 
 
 " }}}
