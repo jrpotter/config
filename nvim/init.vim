@@ -116,9 +116,9 @@ nmap <silent> <C-p>t :Tags<CR>
 nmap <silent> <C-p>s :Snippets<CR>
 
 " Buffer Specific
-nmap <silent> <C-m>c :Bcommits<CR>
-nmap <silent> <C-m>l :BLines<CR>
-nmap <silent> <C-p>b :BTags<CR>
+nmap <silent> <C-p>bc :Bcommits<CR>
+nmap <silent> <C-p>bl :BLines<CR>
+nmap <silent> <C-p>bt :BTags<CR>
 
 
 " }}}
@@ -195,6 +195,7 @@ let g:neomake_cpp_gcc_maker = {
 
 " Add numbers to NetRW
 let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+let g:netrw_banner = 1
 
 
 " }}}
