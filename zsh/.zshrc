@@ -53,8 +53,9 @@ set -o ignoreeof
 # Multiplexer
 # ==================================================
 
+alias tmux="tmux new-session -A -s main"
 if command -v tmux > /dev/null; then
-    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmux new-session -A -s main
+    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && tmux
 fi
 
 

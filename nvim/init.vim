@@ -7,8 +7,7 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
-Plug 'christoomey/vim-tmux-navigator'
-Plug 'honza/vim-snippets'
+Plug 'jrpotter/vim-unimpaired'
 Plug 'justinmk/vim-sneak'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -17,14 +16,12 @@ Plug 'majutsushi/tagbar'
 Plug 'mbbill/undotree'
 Plug 'mhinz/vim-startify'
 Plug 'neomake/neomake'
-Plug 'sirver/ultisnips'
+Plug 'sirver/ultisnips' | Plug 'honza/vim-snippets'
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 Plug 'tmhedberg/SimpylFold'
 Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
-Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-vinegar'
 Plug 'vim-airline/vim-airline'
 
@@ -57,7 +54,10 @@ set hidden
 " Because vi-mode in zsh is set to escape with '^ ', it is necessary
 " to escape out of terminal mode in a way that does not interfere with
 " vi-mode. Thus, Alt is used for terminal related activities.
-tnoremap <A-Space> <C-\><C-n>
+"
+" For Mac OSX, need to set the terminal to map <M-Space> to <C-\><C-n> hex
+" codes (0x1C 0x0E)
+tnoremap <M-Space> <C-\><C-n>
 
 
 " }}}
@@ -116,9 +116,9 @@ nmap <silent> <C-p>t :Tags<CR>
 nmap <silent> <C-p>s :Snippets<CR>
 
 " Buffer Specific
-nmap <silent> <C-p>bc :Bcommits<CR>
-nmap <silent> <C-p>bl :BLines<CR>
-nmap <silent> <C-p>bt :BTags<CR>
+nmap <silent> <C-p><Leader>c :Bcommits<CR>
+nmap <silent> <C-p><Leader>l :BLines<CR>
+nmap <silent> <C-p><Leader>t :BTags<CR>
 
 
 " }}}
@@ -326,14 +326,6 @@ let g:tagbar_show_linenumbers = 2
 
 " }}}
 
-" Undo Tree {{{
-" ===================================================
-
-nmap <silent> <C-w>u :UndotreeToggle<CR>
-
-
-" }}}
-
 " UltiSnips {{{
 " ===================================================
 
@@ -344,20 +336,10 @@ let g:UltiSnipsJumpBackwardTrigger="<C-h>"
 
 " }}}
 
-" Windows {{{
+" Undo Tree {{{
 " ===================================================
 
-let g:tmux_navigator_no_mappings = 1
-
-nmap <silent> <C-w>h :TmuxNavigateLeft<CR>
-nmap <silent> <C-w>j :TmuxNavigateDown<CR>
-nmap <silent> <C-w>k :TmuxNavigateUp<CR>
-nmap <silent> <C-w>l :TmuxNavigateRight<CR>
-
-nnoremap <silent> <Up> :resize -1<CR>
-nnoremap <silent> <Down> :resize +1<CR>
-nnoremap <silent> <Left> :vertical resize +1<CR>
-nnoremap <silent> <Right> :vertical resize +1<CR>
+nmap <silent> <C-w>u :UndotreeToggle<CR>
 
 
 " }}}
