@@ -142,6 +142,9 @@ cnoremap <NUL> <C-c>
 nnoremap j gj
 nnoremap k gk
 
+" Buffer Toggling
+nnoremap <BS> <C-^>
+
 " Switch Marking
 nnoremap ' `
 nnoremap ` '
