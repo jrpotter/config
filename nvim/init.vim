@@ -139,19 +139,19 @@ vnoremap <NUL> <ESC>
 cnoremap <NUL> <C-c>
 
 " Natural editor movement
-nnoremap j gj
-nnoremap k gk
+noremap j gj
+noremap k gk
 
 " Buffer Toggling
-nnoremap <BS> <C-^>
+noremap <BS> <C-^>
 
 " Switch Marking
-nnoremap ' `
-nnoremap ` '
+noremap ' `
+noremap ` '
 
 " Switch Start of Line
-nnoremap 0 ^
-nnoremap ^ 0
+noremap 0 ^
+noremap ^ 0
 
 " Join lines above
 nnoremap <silent> K :-1,.j<CR>
