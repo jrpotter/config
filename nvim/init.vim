@@ -144,7 +144,7 @@ noremap j gj
 noremap k gk
 
 " Buffer Toggling
-noremap <BS> <C-^>
+nnoremap <BS> <C-^>
 
 " Switch Marking
 noremap ' `
@@ -157,15 +157,18 @@ noremap ^ 0
 " Join lines above
 nnoremap <silent> K :-1,.j<CR>
 
+" Word Traversal
+" Note some terminals (such as iterm2) have kbs set to <C-h>, meaning typing this is
+" interpreted as backspace. We work around this by setting kbs=\177 (ascii DEL) by the
+" following command:
+" mktemp /tmp/tmpXXXX | xargs -I % sh -c \
+"   "infocmp $TERM | sed 's/kbs=^[hH]/kbs=\\\\177/' > %; tic %;"
+inoremap <C-h> <C-o>b
+inoremap <C-l> <C-o>w
+
 " Insert Mode Completion Popup
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
-
-" Command Mode Scrolling
-cnoremap <C-h> <Left>
-cnoremap <C-k> <Up>
-cnoremap <C-l> <Right>
-cnoremap <C-j> <Down>
 
 " Shift Tab Backward
 inoremap <S-Tab> <C-d>

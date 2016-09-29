@@ -11,6 +11,8 @@ SAVEHIST=1000
 
 bindkey -v
 bindkey -M viins '^ ' vi-cmd-mode
+bindkey -M viins '^h' backward-word
+bindkey -M viins '^l' forward-word
 
 # Maintain mode between commands
 accept-line() { prev_mode=$KEYMAP; zle .accept-line }
@@ -32,7 +34,7 @@ compinit
 # ==================================================
 
 alias su='su -s /bin/zsh'
-alias ls='ls --color=auto'
+alias ls='ls -G'
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -45,7 +47,7 @@ export EDITOR='nvim'
 export TERM='xterm-256color'
 export NVIM_DIR=$HOME/.config/nvim
 export TMUX_DIR=$HOME/.config/tmux
-export POWERLINE_PATH=/usr/lib/python3.5/site-packages/powerline
+export POWERLINE_PATH=/usr/local/lib/python3.5/site-packages/powerline
 
 set -o ignoreeof
 
