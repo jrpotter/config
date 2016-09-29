@@ -163,8 +163,18 @@ nnoremap <silent> K :-1,.j<CR>
 " following command:
 " mktemp /tmp/tmpXXXX | xargs -I % sh -c \
 "   "infocmp $TERM | sed 's/kbs=^[hH]/kbs=\\\\177/' > %; tic %;"
-inoremap <C-h> <C-o>b
-inoremap <C-l> <C-o>w
+inoremap <C-b> <C-o>b
+inoremap <C-w> <C-o>w
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
+
+" Command Mode Movement
+cnoremap <C-h> <Left>
+cnoremap <C-j> <Down>
+cnoremap <C-k> <Up>
+cnoremap <C-l> <Right>
 
 " Insert Mode Completion Popup
 inoremap <C-j> <C-n>
