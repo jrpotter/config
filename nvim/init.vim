@@ -67,19 +67,10 @@ tnoremap <M-Space> <C-\><C-n>
 " ==================================================
 
 hi FoldColumn ctermfg=Blue ctermbg=none
-hi Visual cterm=bold ctermfg=none ctermbg=DarkBlue
-hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
+hi Visual cterm=bold ctermfg=White ctermbg=Black
 
 syntax on
 
-
-" Commentary {{{
-" ==================================================
-
-au! FileType c,cpp,cs,java setlocal commentstring=//\ %s
-
-
-" }}}
 
 " Deoplete {{{
 " ==================================================
@@ -133,55 +124,18 @@ let g:gutentags_project_root = ['tags']
 " Mappings {{{
 " ===================================================
 
-" Escaping
-noremap <NUL> <ESC>
-inoremap <NUL> <ESC>
-vnoremap <NUL> <ESC>
-cnoremap <NUL> <C-c>
-
-" Natural editor movement
 noremap j gj
 noremap k gk
-
-" Buffer Toggling
-nnoremap <BS> <C-^>
-
-" Switch Marking
 noremap ' `
 noremap ` '
-
-" Switch Start of Line
 noremap 0 ^
 noremap ^ 0
 
+nnoremap <BS> <C-^>
+
 " Join lines above
 nnoremap <silent> K :-1,.j<CR>
-
-" Word Traversal
-" Note some terminals (such as iterm2) have kbs set to <C-h>, meaning typing this is
-" interpreted as backspace. We work around this by setting kbs=\177 (ascii DEL) by the
-" following command:
-" mktemp /tmp/tmpXXXX | xargs -I % sh -c \
-"   "infocmp $TERM | sed 's/kbs=^[hH]/kbs=\\\\177/' > %; tic %;"
-inoremap <C-b> <C-o>b
-inoremap <C-w> <C-o>w
-inoremap <C-h> <Left>
-inoremap <C-j> <Down>
-inoremap <C-k> <Up>
-inoremap <C-l> <Right>
-
-" Command Mode Movement
-cnoremap <C-h> <Left>
-cnoremap <C-j> <Down>
-cnoremap <C-k> <Up>
-cnoremap <C-l> <Right>
-
-" Insert Mode Completion Popup
-inoremap <C-j> <C-n>
-inoremap <C-k> <C-p>
-
-" Shift Tab Backward
-inoremap <S-Tab> <C-d>
+nnoremap <silent> gK :-1,.j!<CR>
 
 " Folding Navigation
 noremap zk zk[z
@@ -239,18 +193,19 @@ au! BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"
 " Search {{{
 " ===================================================
 
+nmap n :norm! nzzzv<CR>
+nmap N :norm! Nzzzv<CR>
+
 function SearchUnderCursor()
     let @/='\<' . expand("<cword>") . '\>'
     set hls
 endfunction
 
-noremap <silent> * *:%s///gn<CR><C-O>
-noremap <silent> # #:%s///gn<CR><C-O>
-noremap <silent> & :call SearchUnderCursor()<CR>:%s///gn<CR><C-O>
-noremap <silent> <C-L> :noh<Bar>diffupdate<CR>
+noremap <silent> * :norm! *:%s///gn<CR>zzzv<C-O>
+noremap <silent> # :norm! #:%s///gn<CR>zzzv<C-O>
+noremap <silent> & :call SearchUnderCursor()<CR>:%s///gn<CR>zzzv<C-O>
 
-nmap n :norm! nzzzv<CR>
-nmap N :norm! Nzzzv<CR>
+noremap <silent> <C-L> :nohl<Bar>diffupdate<CR>
 
 
 " }}}
@@ -260,13 +215,13 @@ nmap N :norm! Nzzzv<CR>
 " Convenience function to avoid writing NVIM_DIR repeatedly
 
 " Save Session As
-function SSA(name)
+function! SSA(name)
     let path = $NVIM_DIR . '/sessions/' . a:name
     exec 'mks! ' . path
 endfunction
 
 " Load Saved Session
-function LSS(name)
+function! LSS(name)
     let path = $NVIM_DIR . '/sessions/' . a:name
     exec 'source ' . path
 endfunction
@@ -289,9 +244,6 @@ set shiftwidth=4
 set splitright
 set backspace=indent,eol,start
 set complete-=i
-set backupdir=$NVIM_DIR/backup//
-set directory=$NVIM_DIR/swap//
-set undodir=$NVIM_DIR/undo//
 set ruler
 set scrolloff=1
 set sidescrolloff=5
@@ -331,24 +283,12 @@ nmap <silent> <C-g> :ta<CR>zzzv
 
 " }}}
 
-" Tagbar {{{
-" ===================================================
-
-nmap <silent> <C-w>t :TagbarToggle<CR>
-
-let g:tagbar_autoshowtag = 1
-let g:tagbar_compact = 1
-let g:tagbar_show_linenumbers = 2
-
-
-" }}}
-
 " UltiSnips {{{
 " ===================================================
 
 let g:UltiSnipsExpandTrigger="<Tab>"
-let g:UltiSnipsJumpForwardTrigger="<C-l>"
-let g:UltiSnipsJumpBackwardTrigger="<C-h>"
+let g:UltiSnipsJumpForwardTrigger="<Tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
 
 
 " }}}
