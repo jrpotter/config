@@ -7,6 +7,7 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
+Plug 'jrpotter/vim-highlight'
 Plug 'jrpotter/vim-unimpaired'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -17,11 +18,9 @@ Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
 Plug 'mhinz/vim-startify'
 Plug 'neomake/neomake'
-Plug 'sirver/ultisnips' | Plug 'honza/vim-snippets'
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
-Plug 'tmhedberg/SimpylFold'
 Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
 Plug 'wellle/targets.vim'
@@ -66,6 +65,8 @@ tnoremap <M-Space> <C-\><C-n>
 " Colors {{{
 " ==================================================
 
+hi ColorColumn cterm=bold ctermfg=White ctermbg=Black
+hi CursorColumn cterm=bold ctermfg=White ctermbg=Black
 hi FoldColumn ctermfg=Blue ctermbg=none
 hi Visual cterm=bold ctermfg=White ctermbg=Black
 
@@ -124,21 +125,15 @@ let g:gutentags_project_root = ['tags']
 " Mappings {{{
 " ===================================================
 
-noremap j gj
-noremap k gk
 noremap ' `
 noremap ` '
 noremap 0 ^
 noremap ^ 0
-
+noremap j gj
+noremap k gk
 nnoremap <BS> <C-^>
-
-" Join lines above
 nnoremap <silent> K :-1,.j<CR>
 nnoremap <silent> gK :-1,.j!<CR>
-
-" Folding Navigation
-noremap zk zk[z
 
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
@@ -190,26 +185,6 @@ au! BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"
 
 " }}}
 
-" Search {{{
-" ===================================================
-
-nmap n :norm! nzzzv<CR>
-nmap N :norm! Nzzzv<CR>
-
-function SearchUnderCursor()
-    let @/='\<' . expand("<cword>") . '\>'
-    set hls
-endfunction
-
-noremap <silent> * :norm! *:%s///gn<CR>zzzv<C-O>
-noremap <silent> # :norm! #:%s///gn<CR>zzzv<C-O>
-noremap <silent> & :call SearchUnderCursor()<CR>:%s///gn<CR>zzzv<C-O>
-
-noremap <silent> <C-L> :nohl<Bar>diffupdate<CR>
-
-
-" }}}
-
 " Sessions {{{
 " ===================================================
 " Convenience function to avoid writing NVIM_DIR repeatedly
@@ -235,21 +210,21 @@ command -nargs=1 LSS :call LSS(<f-args>)
 " Settings {{{
 " ===================================================
 
-set showcmd
-set noshowmode
-set number
-set expandtab
-set tabstop=4
-set shiftwidth=4
-set splitright
 set backspace=indent,eol,start
-set complete-=i
-set ruler
-set scrolloff=1
-set sidescrolloff=5
+set expandtab
+set noshowmode
+set notimeout
+set nowrap
 set number
 set relativenumber
-set notimeout
+set ruler
+set scrolloff=1
+set shiftwidth=4
+set showcmd
+set sidescrolloff=5
+set smartcase
+set splitright
+set tabstop=4
 set updatetime=500
 
 
@@ -279,16 +254,6 @@ let g:startify_session_dir = '$NVIM_DIR/sessions'
 nmap <silent> <C-]> :exe "tag " . expand('<cword>')<CR>zzzv<CR>
 nmap <silent> <C-t> :exe "norm! \<C-t>zzzv"<CR>
 nmap <silent> <C-g> :ta<CR>zzzv
-
-
-" }}}
-
-" UltiSnips {{{
-" ===================================================
-
-let g:UltiSnipsExpandTrigger="<Tab>"
-let g:UltiSnipsJumpForwardTrigger="<Tab>"
-let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
 
 
 " }}}

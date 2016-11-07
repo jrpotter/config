@@ -10,9 +10,9 @@ SAVEHIST=1000
 # ==================================================
 
 bindkey -v
-bindkey -M viins '^ ' vi-cmd-mode
-bindkey -M viins '^h' backward-word
-bindkey -M viins '^l' forward-word
+bindkey -M viins '^b' backward-word
+bindkey -M viins '^w' forward-word
+KEYTIMEOUT=1
 
 # Maintain mode between commands
 accept-line() { prev_mode=$KEYMAP; zle .accept-line }
@@ -30,7 +30,7 @@ autoload -Uz compinit
 compinit
 
 
-# Environment Variables
+# Aliases
 # ==================================================
 
 alias su='su -s /bin/zsh'
@@ -43,17 +43,21 @@ alias alert='notify-send --urgency=low -i \
     "$([ $? = 0 ] && echo terminal || echo error)" \
     "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
+
+# Environment Variables
+# ==================================================
+
 export EDITOR='nvim'
 export TERM='xterm-256color'
 export NVIM_DIR=$HOME/.config/nvim
 export TMUX_DIR=$HOME/.config/tmux
 export POWERLINE_PATH=/usr/local/lib/python3.5/site-packages/powerline
 
-set -o ignoreeof
-
 
 # Multiplexer
 # ==================================================
+
+set -o ignoreeof
 
 alias tmux="tmux new-session -A -s main"
 if command -v tmux > /dev/null; then
