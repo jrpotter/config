@@ -134,6 +134,8 @@ noremap k gk
 nnoremap <BS> <C-^>
 nnoremap <silent> K :-1,.j<CR>
 nnoremap <silent> gK :-1,.j!<CR>
+nmap n :norm! nzzzv<CR>
+nmap N :norm! Nzzzv<CR>
 
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
