@@ -67,7 +67,13 @@ tnoremap <M-Space> <C-\><C-n>
 
 hi ColorColumn cterm=bold ctermfg=White ctermbg=Black
 hi CursorColumn cterm=bold ctermfg=White ctermbg=Black
+hi DiffAdd cterm=bold ctermfg=White ctermbg=Green
+hi DiffChange cterm=bold ctermfg=White ctermbg=Blue
+hi DiffDelete cterm=bold ctermfg=White ctermbg=Red
 hi FoldColumn ctermfg=Blue ctermbg=none
+hi Folded cterm=bold ctermfg=White ctermbg=Black
+hi MatchParen cterm=bold ctermfg=White ctermbg=Black
+hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
 hi Visual cterm=bold ctermfg=White ctermbg=Black
 
 syntax on
