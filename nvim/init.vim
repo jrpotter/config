@@ -7,6 +7,7 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
+Plug 'jpalardy/vim-slime'
 Plug 'jrpotter/vim-highlight'
 Plug 'jrpotter/vim-unimpaired'
 Plug 'junegunn/fzf', { 'do': './install --all' }
@@ -87,6 +88,7 @@ let g:deoplete#enable_at_startup = 1
 
 " }}}
 
+
 " Folding {{{
 " ===================================================
 
@@ -94,13 +96,19 @@ set foldcolumn=3
 set foldlevel=99
 set foldmethod=syntax
 
-au! FileType vim setlocal foldmethod=marker
+autocmd! FileType vim setlocal foldmethod=marker
 
 
 " }}}
 
 " FZF (Fuzzy Finder) {{{
 " ===================================================
+
+let g:fzf_action = {
+            \ 'ctrl-t': 'tab split',
+            \ 'ctrl-s': 'split',
+            \ 'ctrl-v': 'vsplit'
+            \ }
 
 " Try to emulate ctrl-p
 nmap <silent> <C-p>c :Commits<CR>
@@ -115,9 +123,9 @@ nmap <silent> <C-p>t :Tags<CR>
 nmap <silent> <C-p>s :Snippets<CR>
 
 " Buffer Specific
-nmap <silent> <C-p><Leader>c :Bcommits<CR>
-nmap <silent> <C-p><Leader>l :BLines<CR>
-nmap <silent> <C-p><Leader>t :BTags<CR>
+nmap <silent> <Leader><C-p>c :Bcommits<CR>
+nmap <silent> <Leader><C-p>l :BLines<CR>
+nmap <silent> <Leader><C-p>t :BTags<CR>
 
 
 " }}}
@@ -152,10 +160,9 @@ cmap w!! w !sudo tee % >/dev/null
 " Neomake {{{
 " ===================================================
 
-au! BufWritePost * Neomake
+autocmd! BufWritePost * Neomake
 
 let g:neomake_verbose = 0
-
 let g:neomake_cpp_enable_makers = ['gcc']
 let g:neomake_cpp_gcc_maker = {
             \ 'exe': 'g++'
@@ -188,7 +195,7 @@ let g:netrw_banner = 1
 set shada='1000,f1,<500,:500,@500,/500,n$NVIM_DIR/.shada
 
 " Save the cursor position
-au! BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+autocmd! BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
 
 " }}}
@@ -234,6 +241,35 @@ set smartcase
 set splitright
 set tabstop=4
 set updatetime=500
+
+
+" }}}
+
+" Slime {{{
+" ===================================================
+
+let g:slime_target = 'neovim'
+let g:slime_dont_ask_default = 1
+
+" Custom Variables
+let s:repl_targets = {
+            \ 'python' : 'python3',
+            \ 'haskell' : 'ghci',
+            \ }
+
+function! s:SlimeConfig()
+    let bv = getbufvar('#', 'terminal_job_id')
+    let b:slime_config = { 'jobid' : bv }
+endfunction
+
+for key in keys(s:repl_targets)
+    exe 'autocmd! FileType ' . key . ' nnoremap <buffer> <silent> <Leader>ts ' .
+                \ ':split term://' . s:repl_targets[key] . '<CR>' .
+                \ '<C-W>p:call <SID>SlimeConfig()<CR>'
+    exe 'autocmd! FileType ' . key . ' nnoremap <buffer> <silent> <Leader>tv ' .
+                \ ':vsplit term://' . s:repl_targets[key] . '<CR>' .
+                \ '<C-w>p:call <SID>SlimeConfig()<CR>'
+endfor
 
 
 " }}}
