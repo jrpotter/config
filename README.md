@@ -8,7 +8,9 @@ I did not intend to delete. This is a listing of certain files I have accidental
 of for referencing when I end up deleting them again.
 
 Included:
+* LaTeX
 * Neovim
+* Powerline
+* Termite
 * ZSH
 * tmux
-* LaTeX (MathJax)
