@@ -7,7 +7,7 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
-Plug 'jrpotter/vim-slime'
+Plug 'jpalardy/vim-slime'
 Plug 'jrpotter/vim-highlight'
 Plug 'jrpotter/vim-unimpaired'
 Plug 'junegunn/fzf', { 'do': './install --all' }
@@ -205,19 +205,19 @@ autocmd BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! 
 " Convenience function to avoid writing NVIM_DIR repeatedly
 
 " Save Session As
-function! SSA(name)
+function! s:SSA(name)
     let path = $NVIM_DIR . '/sessions/' . a:name
     exec 'mks! ' . path
 endfunction
 
 " Load Saved Session
-function! LSS(name)
+function! s:LSS(name)
     let path = $NVIM_DIR . '/sessions/' . a:name
     exec 'source ' . path
 endfunction
 
-command -nargs=1 SSA :call SSA(<f-args>)
-command -nargs=1 LSS :call LSS(<f-args>)
+command -nargs=1 SSA :call <SID>SSA(<f-args>)
+command -nargs=1 LSS :call <SID>LSS(<f-args>)
 
 
 " }}}
@@ -308,7 +308,7 @@ let g:startify_session_dir = '$NVIM_DIR/sessions'
 " Tags {{{
 " ===================================================
 
-nmap <silent> <C-]> :exe "tag " . expand('<cword>')<CR>zzzv<CR>
+nmap <silent> <C-]> :exe 'tag ' . expand('<cword>')<CR>zzzv<CR>
 nmap <silent> <C-t> :exe "norm! \<C-t>zzzv"<CR>
 nmap <silent> <C-g> :ta<CR>zzzv
 
@@ -322,3 +322,32 @@ nmap <silent> <C-w>u :UndotreeToggle<CR>
 
 
 " }}}
+
+" Windows {{{
+" ===================================================
+
+function! s:ExpandWindowLeft(count) range
+    let cur_win = winnr()
+    exe "normal! \<C-w>h"
+    let next_win = winnr()
+    if next_win != cur_win
+        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
+    else
+        exe "normal! " . a:count . "\<C-w><"
+    endif
+endfunction
+
+function! s:ExpandWindowRight(count) range
+    let cur_win = winnr()
+    exe "normal! \<C-w>l"
+    let next_win = winnr()
+    if next_win != cur_win
+        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
+    else
+        exe "normal! " . a:count . "\<C-w><"
+    endif
+endfunction
+
+nnoremap <silent> <C-w>< :<C-u>call <SID>ExpandWindowLeft(v:count1)<CR>
+nnoremap <silent> <C-w>> :<C-u>call <SID>ExpandWindowRight(v:count1)<CR>
+
