@@ -7,7 +7,7 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
-Plug 'jpalardy/vim-slime'
+Plug 'jrpotter/vim-slime'
 Plug 'jrpotter/vim-highlight'
 Plug 'jrpotter/vim-unimpaired'
 Plug 'junegunn/fzf', { 'do': './install --all' }
@@ -96,7 +96,7 @@ set foldcolumn=3
 set foldlevel=99
 set foldmethod=syntax
 
-autocmd! FileType vim setlocal foldmethod=marker
+autocmd FileType vim setlocal foldmethod=marker
 
 
 " }}}
@@ -146,8 +146,8 @@ noremap ^ 0
 noremap j gj
 noremap k gk
 nnoremap <BS> <C-^>
-nnoremap <silent> K :-1,.j<CR>
-nnoremap <silent> gK :-1,.j!<CR>
+nnoremap <silent> K kJ
+nnoremap <silent> gK kgJ
 nmap n :norm! nzzzv<CR>
 nmap N :norm! Nzzzv<CR>
 
@@ -160,7 +160,7 @@ cmap w!! w !sudo tee % >/dev/null
 " Neomake {{{
 " ===================================================
 
-autocmd! BufWritePost * Neomake
+autocmd BufWritePost * Neomake
 
 let g:neomake_verbose = 0
 let g:neomake_cpp_enable_makers = ['gcc']
@@ -195,7 +195,7 @@ let g:netrw_banner = 1
 set shada='1000,f1,<500,:500,@500,/500,n$NVIM_DIR/.shada
 
 " Save the cursor position
-autocmd! BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+autocmd BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
 
 " }}}
@@ -250,6 +250,7 @@ set updatetime=500
 
 let g:slime_target = 'neovim'
 let g:slime_dont_ask_default = 1
+let g:slime_paste_file = tempname()
 
 " Custom Variables
 let s:repl_targets = {
@@ -258,18 +259,30 @@ let s:repl_targets = {
             \ }
 
 function! s:SlimeConfig()
-    let bv = getbufvar('#', 'terminal_job_id')
+    let bv = getbufvar('%', 'terminal_job_id')
+    exe "normal! \<C-w>p"
     let b:slime_config = { 'jobid' : bv }
 endfunction
 
-for key in keys(s:repl_targets)
-    exe 'autocmd! FileType ' . key . ' nnoremap <buffer> <silent> <Leader>ts ' .
-                \ ':split term://' . s:repl_targets[key] . '<CR>' .
-                \ '<C-W>p:call <SID>SlimeConfig()<CR>'
-    exe 'autocmd! FileType ' . key . ' nnoremap <buffer> <silent> <Leader>tv ' .
-                \ ':vsplit term://' . s:repl_targets[key] . '<CR>' .
-                \ '<C-w>p:call <SID>SlimeConfig()<CR>'
-endfor
+function! s:SlimeMappings()
+    if has_key(s:repl_targets, &filetype)
+        exe 'nnoremap <silent> <Leader>ss ' .
+                \ ':split term://' . s:repl_targets[&filetype] . '<CR>' .
+                \ ':call <SID>SlimeConfig()<CR>'
+        exe 'nnoremap <silent> <Leader>sv ' .
+                \ ':vsplit term://' . s:repl_targets[&filetype] . '<CR>' .
+                \ ':call <SID>SlimeConfig()<CR>'
+    else
+        nnoremap <silent> <Leader>ss
+            \ :split<Bar>enew<Bar>call termopen("$SHELL -d -f")<CR>
+            \ :call <SID>SlimeConfig()<CR>
+        nnoremap <silent> <Leader>sv
+            \ :vsplit<Bar>enew<Bar>call termopen("$SHELL -d -f")<CR>
+            \ :call <SID>SlimeConfig()<CR>
+    end
+endfunction
+
+autocmd BufEnter * call <SID>SlimeMappings()
 
 
 " }}}
