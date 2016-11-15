@@ -14,11 +14,9 @@ bindkey -M viins '^b' backward-word
 bindkey -M viins '^w' forward-word
 KEYTIMEOUT=1
 
-# Maintain mode between commands
-accept-line() { prev_mode=$KEYMAP; zle .accept-line }
-zle-line-init() { zle -K ${prev_mode:-viins} }
-zle -N accept-line
-zle -N zle-line-init
+# Start in command line mode
+# zle-line-init() { zle -K 'vicmd' }
+# zle -N zle-line-init
 
 
 # Completion

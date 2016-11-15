@@ -240,6 +240,7 @@ set sidescrolloff=5
 set smartcase
 set splitright
 set tabstop=4
+set textwidth=80
 set updatetime=500
 
 
