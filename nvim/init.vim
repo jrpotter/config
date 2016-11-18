@@ -2,7 +2,7 @@
 " ===================================================
 
 function! DoRemote(arg)
-    UpdateRemotePlugins
+  UpdateRemotePlugins
 endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
@@ -68,9 +68,9 @@ tnoremap <M-Space> <C-\><C-n>
 
 hi ColorColumn cterm=bold ctermfg=White ctermbg=Black
 hi CursorColumn cterm=bold ctermfg=White ctermbg=Black
-hi DiffAdd cterm=bold ctermfg=Green ctermbg=Black
-hi DiffChange cterm=bold ctermfg=Blue ctermbg=Black
-hi DiffDelete cterm=bold ctermfg=Red ctermbg=Black
+hi DiffAdd cterm=bold ctermfg=White ctermbg=Green
+hi DiffChange cterm=bold ctermfg=White ctermbg=Blue
+hi DiffDelete cterm=bold ctermfg=White ctermbg=Red
 hi FoldColumn ctermfg=Blue ctermbg=none
 hi Folded cterm=bold ctermfg=White ctermbg=Black
 hi MatchParen cterm=bold ctermfg=White ctermbg=Black
@@ -105,10 +105,10 @@ autocmd FileType vim setlocal foldmethod=marker
 " ===================================================
 
 let g:fzf_action = {
-            \ 'ctrl-t': 'tab split',
-            \ 'ctrl-s': 'split',
-            \ 'ctrl-v': 'vsplit'
-            \ }
+      \ 'ctrl-t': 'tab split',
+      \ 'ctrl-s': 'split',
+      \ 'ctrl-v': 'vsplit'
+      \ }
 
 " Try to emulate ctrl-p
 nmap <silent> <C-p>c :Commits<CR>
@@ -165,8 +165,8 @@ autocmd BufWritePost * Neomake
 let g:neomake_verbose = 0
 let g:neomake_cpp_enable_makers = ['gcc']
 let g:neomake_cpp_gcc_maker = {
-            \ 'exe': 'g++'
-            \ }
+      \ 'exe': 'g++'
+      \ }
 
 
 " }}}
@@ -194,8 +194,14 @@ let g:netrw_banner = 1
 "  n     : Name used for ShaDa file
 set shada='1000,f1,<500,:500,@500,/500,n$NVIM_DIR/.shada
 
+function! s:SaveCursorPosition()
+  if line("'\"") > 1 && line("'\"") <= line("$")
+    exe "normal! g`\""
+  endif
+endfunction
+
 " Save the cursor position
-autocmd BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
+autocmd BufRead * call <SID>SaveCursorPosition()
 
 
 " }}}
@@ -206,14 +212,14 @@ autocmd BufRead * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! 
 
 " Save Session As
 function! s:SSA(name)
-    let path = $NVIM_DIR . '/sessions/' . a:name
-    exec 'mks! ' . path
+  let path = $NVIM_DIR . '/sessions/' . a:name
+  exec 'mks! ' . path
 endfunction
 
 " Load Saved Session
 function! s:LSS(name)
-    let path = $NVIM_DIR . '/sessions/' . a:name
-    exec 'source ' . path
+  let path = $NVIM_DIR . '/sessions/' . a:name
+  exec 'source ' . path
 endfunction
 
 command -nargs=1 SSA :call <SID>SSA(<f-args>)
@@ -254,36 +260,76 @@ let g:slime_dont_ask_default = 1
 let g:slime_paste_file = tempname()
 
 " Custom Variables
+let s:repl_linkage = { }
 let s:repl_targets = {
-            \ 'python' : 'python3',
-            \ 'haskell' : 'ghci',
-            \ }
+      \ 'python' : ['ipython', 'python3'],
+      \ 'haskell' : ['ghci'],
+      \ }
 
-function! s:SlimeConfig()
+function! s:ToggleSlime(vert)
+  let parent = bufnr('%')
+  let link = s:repl_linkage[parent]
+  if bufwinnr(link) == -1
+    if a:vert | vsplit | else | split | end
+    exe s:repl_linkage[parent] . "buffer"
+    exe "normal! \<C-w>p"
+  else
+    exe bufwinnr(link) . 'close!'
+  end
+endfunction
+
+function! s:OpenSlime(vert, target)
+  let parent = bufnr('%')
+  if has_key(s:repl_linkage, parent)
+    call s:ToggleSlime(a:vert)
+  else
+    if a:vert | vsplit | else | split | end
+    enew
+    if empty(a:target)
+      call termopen("$SHELL -d -f")
+    else
+      call termopen(a:target)
+    end
+    let bt = bufnr('%')
     let bv = getbufvar('%', 'terminal_job_id')
     exe "normal! \<C-w>p"
     let b:slime_config = { 'jobid' : bv }
+    let s:repl_linkage[parent] = bt
+  end
 endfunction
 
+function! s:DeleteSlime(filename)
+  let bt = bufnr(a:filename)
+  if has_key(s:repl_linkage, bt)
+    exe 'bdelete! ' . s:repl_linkage[bt]
+    unlet s:repl_linkage[bt]
+  endif
+endfunction
+
+" Sets up slime mappings whenever a buffer is entered
 function! s:SlimeMappings()
-    if has_key(s:repl_targets, &filetype)
-        exe 'nnoremap <silent> <Leader>ss ' .
-                \ ':split term://' . s:repl_targets[&filetype] . '<CR>' .
-                \ ':call <SID>SlimeConfig()<CR>'
-        exe 'nnoremap <silent> <Leader>sv ' .
-                \ ':vsplit term://' . s:repl_targets[&filetype] . '<CR>' .
-                \ ':call <SID>SlimeConfig()<CR>'
-    else
-        nnoremap <silent> <Leader>ss
-            \ :split<Bar>enew<Bar>call termopen("$SHELL -d -f")<CR>
-            \ :call <SID>SlimeConfig()<CR>
-        nnoremap <silent> <Leader>sv
-            \ :vsplit<Bar>enew<Bar>call termopen("$SHELL -d -f")<CR>
-            \ :call <SID>SlimeConfig()<CR>
-    end
+  if exists('b:slime_mapped')
+    return
+  endif
+  let b:slime_mapped = 1
+
+  let target_repl = ''
+  if has_key(s:repl_targets, &filetype)
+    for repl in s:repl_targets[&filetype]
+      if executable(repl)
+        let target_repl = repl
+        break
+      endif
+    endfor
+  endif
+  exe ' nnoremap <silent> <buffer> <Leader>ss ' .
+      \ ':call <SID>OpenSlime(0, ''' . target_repl . ''')<CR>'
+  exe ' nnoremap <silent> <buffer> <Leader>sv ' .
+      \ ':call <SID>OpenSlime(1, ''' . target_repl . ''')<CR>'
 endfunction
 
 autocmd BufEnter * call <SID>SlimeMappings()
+autocmd BufUnload * call <SID>DeleteSlime(expand('<afile>'))
 
 
 " }}}
@@ -292,14 +338,14 @@ autocmd BufEnter * call <SID>SlimeMappings()
 " ===================================================
 
 let g:startify_custom_header = [
-            \ '     ________   ___      ___ ___  _____ ______            ', 
-            \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
-            \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
-            \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
-            \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
-            \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
-            \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
-            \ ]
+      \ '     ________   ___      ___ ___  _____ ______            ', 
+      \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
+      \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
+      \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
+      \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
+      \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
+      \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
+      \ ]
 
 let g:startify_session_dir = '$NVIM_DIR/sessions'
 
