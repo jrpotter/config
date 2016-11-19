@@ -7,8 +7,8 @@ endfunction
 
 call plug#begin('$NVIM_DIR/plugged')
 
-Plug 'jpalardy/vim-slime'
 Plug 'jrpotter/vim-highlight'
+Plug 'jrpotter/vim-repl'
 Plug 'jrpotter/vim-unimpaired'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -47,7 +47,7 @@ let g:airline_powerline_fonts = 1
 
 " }}}
 
-" Buffers {{{
+" Buffers & Windows {{{
 " ===================================================
 
 set hidden
@@ -60,25 +60,35 @@ set hidden
 " codes (0x1C 0x0E)
 tnoremap <M-Space> <C-\><C-n>
 
+" It is simpler to have '<' and '>' simply mean grow in the direction the
+" GT and LT signs are pointing towards.
+function! s:ExpandWindowLeft(count) range
+    let cur_win = winnr()
+    exe "normal! \<C-w>h"
+    let next_win = winnr()
+    if next_win != cur_win
+        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
+    else
+        exe "normal! " . a:count . "\<C-w><"
+    endif
+endfunction
+
+function! s:ExpandWindowRight(count) range
+    let cur_win = winnr()
+    exe "normal! \<C-w>l"
+    let next_win = winnr()
+    if next_win != cur_win
+        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
+    else
+        exe "normal! " . a:count . "\<C-w><"
+    endif
+endfunction
+
+nnoremap <silent> <C-w>< :<C-u>call <SID>ExpandWindowLeft(v:count1)<CR>
+nnoremap <silent> <C-w>> :<C-u>call <SID>ExpandWindowRight(v:count1)<CR>
+
 
 " }}}
-
-" Colors {{{
-" ==================================================
-
-hi ColorColumn cterm=bold ctermfg=White ctermbg=Black
-hi CursorColumn cterm=bold ctermfg=White ctermbg=Black
-hi DiffAdd cterm=bold ctermfg=White ctermbg=Green
-hi DiffChange cterm=bold ctermfg=White ctermbg=Blue
-hi DiffDelete cterm=bold ctermfg=White ctermbg=Red
-hi FoldColumn ctermfg=Blue ctermbg=none
-hi Folded cterm=bold ctermfg=White ctermbg=Black
-hi MatchParen cterm=bold ctermfg=White ctermbg=Black
-hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
-hi Visual cterm=bold ctermfg=White ctermbg=Black
-
-syntax on
-
 
 " Deoplete {{{
 " ==================================================
@@ -136,6 +146,23 @@ nmap <silent> <Leader><C-p>t :BTags<CR>
 let g:gutentags_project_root = ['tags']
 
 
+" Highlighting {{{
+" ==================================================
+
+hi ColorColumn cterm=bold ctermfg=White ctermbg=Black
+hi CursorColumn cterm=bold ctermfg=White ctermbg=Black
+hi DiffAdd cterm=bold ctermfg=White ctermbg=Green
+hi DiffChange cterm=bold ctermfg=White ctermbg=Blue
+hi DiffDelete cterm=bold ctermfg=White ctermbg=Red
+hi FoldColumn ctermfg=Blue ctermbg=none
+hi Folded cterm=bold ctermfg=White ctermbg=Black
+hi MatchParen cterm=bold ctermfg=White ctermbg=Black
+hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
+hi Visual cterm=bold ctermfg=White ctermbg=Black
+
+syntax on
+
+
 " Mappings {{{
 " ===================================================
 
@@ -164,9 +191,7 @@ autocmd BufWritePost * Neomake
 
 let g:neomake_verbose = 0
 let g:neomake_cpp_enable_makers = ['gcc']
-let g:neomake_cpp_gcc_maker = {
-      \ 'exe': 'g++'
-      \ }
+let g:neomake_cpp_gcc_maker = { 'exe' : 'g++' }
 
 
 " }}}
@@ -252,88 +277,6 @@ set updatetime=500
 
 " }}}
 
-" Slime {{{
-" ===================================================
-
-let g:slime_target = 'neovim'
-let g:slime_dont_ask_default = 1
-let g:slime_paste_file = tempname()
-
-" Custom Variables
-let s:repl_linkage = { }
-let s:repl_targets = {
-      \ 'python' : ['ipython', 'python3'],
-      \ 'haskell' : ['ghci'],
-      \ }
-
-function! s:ToggleSlime(vert)
-  let parent = bufnr('%')
-  let link = s:repl_linkage[parent]
-  if bufwinnr(link) == -1
-    if a:vert | vsplit | else | split | end
-    exe s:repl_linkage[parent] . "buffer"
-    exe "normal! \<C-w>p"
-  else
-    exe bufwinnr(link) . 'close!'
-  end
-endfunction
-
-function! s:OpenSlime(vert, target)
-  let parent = bufnr('%')
-  if has_key(s:repl_linkage, parent)
-    call s:ToggleSlime(a:vert)
-  else
-    if a:vert | vsplit | else | split | end
-    enew
-    if empty(a:target)
-      call termopen("$SHELL -d -f")
-    else
-      call termopen(a:target)
-    end
-    let bt = bufnr('%')
-    let bv = getbufvar('%', 'terminal_job_id')
-    exe "normal! \<C-w>p"
-    let b:slime_config = { 'jobid' : bv }
-    let s:repl_linkage[parent] = bt
-  end
-endfunction
-
-function! s:DeleteSlime(filename)
-  let bt = bufnr(a:filename)
-  if has_key(s:repl_linkage, bt)
-    exe 'bdelete! ' . s:repl_linkage[bt]
-    unlet s:repl_linkage[bt]
-  endif
-endfunction
-
-" Sets up slime mappings whenever a buffer is entered
-function! s:SlimeMappings()
-  if exists('b:slime_mapped')
-    return
-  endif
-  let b:slime_mapped = 1
-
-  let target_repl = ''
-  if has_key(s:repl_targets, &filetype)
-    for repl in s:repl_targets[&filetype]
-      if executable(repl)
-        let target_repl = repl
-        break
-      endif
-    endfor
-  endif
-  exe ' nnoremap <silent> <buffer> <Leader>ss ' .
-      \ ':call <SID>OpenSlime(0, ''' . target_repl . ''')<CR>'
-  exe ' nnoremap <silent> <buffer> <Leader>sv ' .
-      \ ':call <SID>OpenSlime(1, ''' . target_repl . ''')<CR>'
-endfunction
-
-autocmd BufEnter * call <SID>SlimeMappings()
-autocmd BufUnload * call <SID>DeleteSlime(expand('<afile>'))
-
-
-" }}}
-
 " Startify {{{
 " ===================================================
 
@@ -369,32 +312,4 @@ nmap <silent> <C-w>u :UndotreeToggle<CR>
 
 
 " }}}
-
-" Windows {{{
-" ===================================================
-
-function! s:ExpandWindowLeft(count) range
-    let cur_win = winnr()
-    exe "normal! \<C-w>h"
-    let next_win = winnr()
-    if next_win != cur_win
-        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
-    else
-        exe "normal! " . a:count . "\<C-w><"
-    endif
-endfunction
-
-function! s:ExpandWindowRight(count) range
-    let cur_win = winnr()
-    exe "normal! \<C-w>l"
-    let next_win = winnr()
-    if next_win != cur_win
-        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
-    else
-        exe "normal! " . a:count . "\<C-w><"
-    endif
-endfunction
-
-nnoremap <silent> <C-w>< :<C-u>call <SID>ExpandWindowLeft(v:count1)<CR>
-nnoremap <silent> <C-w>> :<C-u>call <SID>ExpandWindowRight(v:count1)<CR>
 
