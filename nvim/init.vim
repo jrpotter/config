@@ -52,10 +52,6 @@ let g:airline_powerline_fonts = 1
 
 set hidden
 
-" Because vi-mode in zsh is set to escape with '^ ', it is necessary
-" to escape out of terminal mode in a way that does not interfere with
-" vi-mode. Thus, Alt is used for terminal related activities.
-"
 " For Mac OSX, need to set the terminal to map <M-Space> to <C-\><C-n> hex
 " codes (0x1C 0x0E)
 tnoremap <M-Space> <C-\><C-n>
@@ -235,20 +231,39 @@ autocmd BufRead * call <SID>SaveCursorPosition()
 " ===================================================
 " Convenience function to avoid writing NVIM_DIR repeatedly
 
-" Save Session As
-function! s:SSA(name)
-  let path = $NVIM_DIR . '/sessions/' . a:name
-  exec 'mks! ' . path
+let s:sessions_path = $NVIM_DIR . '/sessions/'
+
+function s:ListSessions(ArgLead, CmdLine, CursorPos)
+  if !isdirectory(s:sessions_path)
+    return ''
+  endif
+  return system('ls ' . s:sessions_path)
 endfunction
 
-" Load Saved Session
-function! s:LSS(name)
-  let path = $NVIM_DIR . '/sessions/' . a:name
-  exec 'source ' . path
+function! s:SaveSessionAs(name)
+  if !isdirectory(s:sessions_path)
+    call mkdir(s:sessions_path)
+  endif
+  exec 'mksession! ' . s:sessions_path . a:name
 endfunction
 
-command -nargs=1 SSA :call <SID>SSA(<f-args>)
-command -nargs=1 LSS :call <SID>LSS(<f-args>)
+function! s:LoadSavedSession(name)
+  let path = s:sessions_path . a:name
+  if filereadable(path)
+    exec 'source ' . path
+  endif
+endfunction
+
+function! s:DeleteSavedSession(name)
+  let path = s:sessions_path . a:name
+  if filereadable(path)
+    call delete(path)
+  endif
+endfunction
+
+command -nargs=1 -complete=custom,<SID>ListSessions SSA :call <SID>SaveSessionAs(<f-args>)
+command -nargs=1 -complete=custom,<SID>ListSessions LSS :call <SID>LoadSavedSession(<f-args>)
+command -nargs=1 -complete=custom,<SID>ListSessions DSS :call <SID>DeleteSavedSession(<f-args>)
 
 
 " }}}
