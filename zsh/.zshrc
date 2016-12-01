@@ -53,6 +53,7 @@ alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
 alias grep='grep --color=auto'
+alias tmx='tmux new-session -A -s'
 alias alert='notify-send --urgency=low -i \
     "$([ $? = 0 ] && echo terminal || echo error)" \
     "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -75,8 +76,8 @@ export PATH=$CONDA_PATH/bin:$HOME/.local/bin:$PATH
 # ==================================================
 
 set -o ignoreeof
-if command -v tmx > /dev/null && command -v tmux > /dev/null; then
-    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && exec tmx main
+if command -v tmux > /dev/null; then
+    [[ ! $TERM =~ screen ]] && [ -z $TMUX ] && tmx main
 fi
 
 # Powerline
@@ -86,11 +87,6 @@ powerline-daemon -q
 if [[ -r $POWERLINE_PATH/bindings/zsh/powerline.zsh ]]; then
     source $POWERLINE_PATH/bindings/zsh/powerline.zsh
 fi
-
-# Google Specific Sourcing
-# ==================================================
-
-source /etc/bash_completion.d/g4d
 
 # FZF (Fuzzy Finder)
 # ==================================================
