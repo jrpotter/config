@@ -5,15 +5,21 @@ function! DoRemote(arg)
   UpdateRemotePlugins
 endfunction
 
+if empty(expand('$NVIM_DIR/autoload/plug.vim'))
+  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+        \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall | nested source $MYVIMRC
+endif
+
 call plug#begin('$NVIM_DIR/plugged')
 
+Plug 'jmcantrell/vim-diffchanges'
 Plug 'jrpotter/vim-highlight'
 Plug 'jrpotter/vim-repl'
 Plug 'jrpotter/vim-unimpaired'
 Plug 'junegunn/fzf', { 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-dirvish'
-Plug 'justinmk/vim-sneak'
 Plug 'Konfekt/FastFold'
 Plug 'ludovicchabant/vim-gutentags'
 Plug 'mbbill/undotree'
@@ -94,7 +100,6 @@ let g:deoplete#enable_at_startup = 1
 
 " }}}
 
-
 " Folding {{{
 " ===================================================
 
@@ -142,6 +147,8 @@ nmap <silent> <Leader><C-p>t :BTags<CR>
 let g:gutentags_project_root = ['tags']
 
 
+" }}}
+
 " Highlighting {{{
 " ==================================================
 
@@ -159,6 +166,8 @@ hi Visual cterm=bold ctermfg=White ctermbg=Black
 syntax on
 
 
+" }}}
+
 " Mappings {{{
 " ===================================================
 
@@ -171,11 +180,60 @@ noremap k gk
 nnoremap <BS> <C-^>
 nnoremap <silent> K kJ
 nnoremap <silent> gK kgJ
-nmap n :norm! nzzzv<CR>
-nmap N :norm! Nzzzv<CR>
+nnoremap <silent> <Leader>d :DiffChangesDiffToggle<CR>
 
 " Allows use of w!! to edit file that required root after ropening without sudo
 cmap w!! w !sudo tee % >/dev/null
+
+
+" }}}
+
+" Motions {{{
+" ===================================================
+
+nnoremap <expr> n 'Nn'[v:searchforward] . 'zzzv'
+nnoremap <expr> N 'nN'[v:searchforward] . 'zzzv'
+
+" 0 indicates backward, 1 indicates forward, -1 indicates inconclusive
+function! s:CheckDirection(motion, ord)
+  let oldpos = getcurpos()
+  exe 'norm! ' . a:motion
+  let newpos = getcurpos()
+
+  let direction = -1
+  if oldpos[2] != newpos[2]
+    call setpos('.', oldpos)
+    exe 'let direction = (oldpos[2] ' . a:ord . ' newpos[2])'
+  endif
+  return direction
+endfunction
+
+function! s:MoveAbsoluteDirection(forward)
+  " Determine direction semicolon and comma moves towards
+  let direction = s:CheckDirection(';', '<')
+  if direction == -1
+    let direction = s:CheckDirection(',', '>')
+  endif
+  if direction != -1
+    exe 'norm! ' . (a:forward != direction ? ',' : ';')
+  endif
+endfunction
+
+nnoremap <silent> ; :call <SID>MoveAbsoluteDirection(1)<CR>
+nnoremap <silent> , :call <SID>MoveAbsoluteDirection(0)<CR>
+
+" Allow adding and subtracting next number in both directions across lines.
+function! s:AddSubtract(char, back)
+  call search('[[:digit:]]', 'cw' . a:back)
+  exe 'norm! ' . v:count1 . a:char
+  silent! call repeat#set( \
+      ":\<C-u>call AddSubtract('" . a:char . "', '" . a:back . "')\<CR>")
+endfunction
+
+nnoremap <silent> <C-a> :<C-u>call <SID>AddSubtract("\<C-a>", '')<CR>
+nnoremap <silent> <Leader><C-a> :<C-u>call <SID>AddSubtract("\<C-a>", 'b')<CR>
+nnoremap <silent> <C-x> :<C-u>call <SID>AddSubtract("\<C-x>", '')<CR>
+nnoremap <silent> Leader<C-x> :<C-u>call <SID>AddSubtract("\<C-x>", 'b')<CR>
 
 
 " }}}
@@ -273,6 +331,7 @@ command -nargs=1 -complete=custom,<SID>ListSessions DSS :call <SID>DeleteSavedSe
 
 set backspace=indent,eol,start
 set expandtab
+set matchpairs+=<:>
 set noshowmode
 set notimeout
 set nowrap
