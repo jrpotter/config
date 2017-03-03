@@ -89,6 +89,9 @@ endfunction
 nnoremap <silent> <C-w>< :<C-u>call <SID>ExpandWindowLeft(v:count1)<CR>
 nnoremap <silent> <C-w>> :<C-u>call <SID>ExpandWindowRight(v:count1)<CR>
 
+" Move to lower window when splitting
+nnoremap <silent> <C-w>s :wincmd s <Bar> wincmd j<CR>
+
 
 " }}}
 
@@ -117,7 +120,7 @@ autocmd FileType vim setlocal foldmethod=marker
 
 let g:fzf_action = {
       \ 'ctrl-t': 'tab split',
-      \ 'ctrl-s': 'split',
+      \ 'ctrl-s': 'split | wincmd j',
       \ 'ctrl-v': 'vsplit'
       \ }
 
@@ -332,6 +335,7 @@ command -nargs=1 -complete=custom,<SID>ListSessions DSS :call <SID>DeleteSavedSe
 set backspace=indent,eol,start
 set expandtab
 set matchpairs+=<:>
+set noerrorbells
 set noshowmode
 set notimeout
 set nowrap
