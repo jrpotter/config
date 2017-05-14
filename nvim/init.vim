@@ -1,394 +1,153 @@
-" vim-plug {{{
-" ===================================================
+let $NVIM_DIR = expand('~/.config/nvim/')
 
-function! DoRemote(arg)
-  UpdateRemotePlugins
+" Utility method to replace all words in the a:abbrs array with expr if any of
+" said words appear first in the command line.
+function! s:cabbrev(abbrs, expr)
+  let l:cmd = '<C-r>=(getcmdpos() == 1 && getcmdtype() == ":")'
+  for key in a:abbrs
+    let l:ternary = l:cmd . ' ? "' . a:expr . '" : "' . key
+    execute 'cabbrev ' . key . ' ' . l:ternary . '"<CR>'
+  endfor
 endfunction
 
-if empty(expand('$NVIM_DIR/autoload/plug.vim'))
-  silent !curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs
+if !filereadable(expand('$NVIM_DIR/autoload/plug.vim'))
+  echohl WarningMsg | echo 'vim-plug not installed. Installing...' | echohl None
+  silent !curl -fLo $NVIM_DIR/autoload/plug.vim --create-dirs
         \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall | nested source $MYVIMRC
 endif
 
-call plug#begin('$NVIM_DIR/plugged')
+runtime autoload/plug.vim
+if exists('*plug#begin')
+  call plug#begin('$NVIM_DIR/plugged')
+  Plug 'airblade/vim-gitgutter'
+  Plug 'ludovicchabant/vim-gutentags'
+  Plug 'jrpotter/vim-fugitive'
+  Plug 'jrpotter/vim-unimpaired'
+  Plug 'junegunn/fzf', { 'do': './install --bin' }
+  Plug 'junegunn/fzf.vim'
+  Plug 'justinmk/vim-dirvish'
+  Plug 'neomake/neomake'
+  Plug 'tpope/vim-surround'
+  Plug 'vim-airline/vim-airline'
+  call plug#end()
+else
+  echohl WarningMsg | echo 'vim-plug could not be installed.' | echohl None
+endif
 
-Plug 'jmcantrell/vim-diffchanges'
-Plug 'jrpotter/vim-highlight'
-Plug 'jrpotter/vim-repl'
-Plug 'jrpotter/vim-unimpaired'
-Plug 'junegunn/fzf', { 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
-Plug 'justinmk/vim-dirvish'
-Plug 'Konfekt/FastFold'
-Plug 'ludovicchabant/vim-gutentags'
-Plug 'mbbill/undotree'
-Plug 'mhinz/vim-startify'
-Plug 'neomake/neomake'
-Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
-Plug 'tpope/vim-abolish'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-surround'
-Plug 'vim-airline/vim-airline'
-Plug 'wellle/targets.vim'
+augroup TerminalInit
+  autocmd!
+  autocmd TermOpen * setlocal foldcolumn=0
+augroup END
 
-call plug#end()
+hi ColorColumn  cterm=bold   ctermfg=White  ctermbg=Black
+hi DiffAdd      cterm=bold   ctermfg=White  ctermbg=Green
+hi DiffChange   cterm=bold   ctermfg=White  ctermbg=Blue
+hi DiffDelete   cterm=bold   ctermfg=White  ctermbg=Red
+hi FoldColumn   ctermfg=Blue ctermbg=none
+hi Folded       cterm=bold   ctermfg=White  ctermbg=Black
+hi MatchParen   cterm=bold   ctermfg=White  ctermbg=Black
 
+let mapleader = "\<Space>"
 
-" }}}
+nnoremap '          `
+nnoremap `          '
+nnoremap g'         g`
+nnoremap g`         g'
+nnoremap 0          ^
+nnoremap ^          0
+nnoremap j          gj
+nnoremap k          gk
+nnoremap K          kJ
+nnoremap gK         kgJ
+nnoremap <BS>       <C-^>
+nnoremap <Space>    <NOP>
+nnoremap <C-g>      :tag<CR>
 
-" Leader {{{
-" ===================================================
+nnoremap <Leader>ve :e $MYVIMRC<CR>
+nnoremap <Leader>vr :so $MYVIMRC<CR>
 
-let mapleader = " "
-
-
-" }}}
-
-" Airline {{{
-" ===================================================
-
-let g:airline_powerline_fonts = 1
-
-
-" }}}
-
-" Buffers & Windows {{{
-" ===================================================
-
-set hidden
-
-" For Mac OSX, need to set the terminal to map <M-Space> to <C-\><C-n> hex
-" codes (0x1C 0x0E)
-tnoremap <M-Space> <C-\><C-n>
-
-" It is simpler to have '<' and '>' simply mean grow in the direction the
-" GT and LT signs are pointing towards.
-function! s:ExpandWindowLeft(count) range
-    let cur_win = winnr()
-    exe "normal! \<C-w>h"
-    let next_win = winnr()
-    if next_win != cur_win
-        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
-    else
-        exe "normal! " . a:count . "\<C-w><"
-    endif
-endfunction
-
-function! s:ExpandWindowRight(count) range
-    let cur_win = winnr()
-    exe "normal! \<C-w>l"
-    let next_win = winnr()
-    if next_win != cur_win
-        exe "normal! \<C-w>p" . a:count . "\<C-w>>"
-    else
-        exe "normal! " . a:count . "\<C-w><"
-    endif
-endfunction
-
-nnoremap <silent> <C-w>< :<C-u>call <SID>ExpandWindowLeft(v:count1)<CR>
-nnoremap <silent> <C-w>> :<C-u>call <SID>ExpandWindowRight(v:count1)<CR>
-
-" Move to lower window when splitting
-nnoremap <silent> <C-w>s :wincmd s <Bar> wincmd j<CR>
-
-
-" }}}
-
-" Deoplete {{{
-" ==================================================
-
-let g:deoplete#enable_at_startup = 1
-
-
-" }}}
-
-" Folding {{{
-" ===================================================
-
+set expandtab
 set foldcolumn=3
 set foldlevel=99
 set foldmethod=syntax
-
-autocmd FileType vim setlocal foldmethod=marker
-
-
-" }}}
-
-" FZF (Fuzzy Finder) {{{
-" ===================================================
-
-let g:fzf_action = {
-      \ 'ctrl-t': 'tab split',
-      \ 'ctrl-s': 'split | wincmd j',
-      \ 'ctrl-v': 'vsplit'
-      \ }
-
-" Try to emulate ctrl-p
-nmap <silent> <C-p>c :Commits<CR>
-nmap <silent> <C-p>g :GFiles<CR>
-nmap <silent> <C-p>h :History:<CR>
-nmap <silent> <C-p>l :Lines<CR>
-nmap <silent> <C-p>m :Marks<CR>
-nmap <silent> <C-p>n :Buffers<CR>
-nmap <silent> <C-p>p :FZF<CR>
-nmap <silent> <C-p>s :History/<CR>
-nmap <silent> <C-p>t :Tags<CR>
-nmap <silent> <C-p>s :Snippets<CR>
-
-" Buffer Specific
-nmap <silent> <Leader><C-p>c :Bcommits<CR>
-nmap <silent> <Leader><C-p>l :BLines<CR>
-nmap <silent> <Leader><C-p>t :BTags<CR>
-
-
-" }}}
-
-" Gutentags {{{
-" ===================================================
-
-let g:gutentags_project_root = ['tags']
-
-
-" }}}
-
-" Highlighting {{{
-" ==================================================
-
-hi ColorColumn cterm=bold ctermfg=White ctermbg=Black
-hi CursorColumn cterm=bold ctermfg=White ctermbg=Black
-hi DiffAdd cterm=bold ctermfg=White ctermbg=Green
-hi DiffChange cterm=bold ctermfg=White ctermbg=Blue
-hi DiffDelete cterm=bold ctermfg=White ctermbg=Red
-hi FoldColumn ctermfg=Blue ctermbg=none
-hi Folded cterm=bold ctermfg=White ctermbg=Black
-hi MatchParen cterm=bold ctermfg=White ctermbg=Black
-hi Search cterm=bold,underline ctermfg=Yellow ctermbg=none
-hi Visual cterm=bold ctermfg=White ctermbg=Black
-
-syntax on
-
-
-" }}}
-
-" Mappings {{{
-" ===================================================
-
-noremap ' `
-noremap ` '
-noremap 0 ^
-noremap ^ 0
-noremap j gj
-noremap k gk
-nnoremap <BS> <C-^>
-nnoremap <silent> K kJ
-nnoremap <silent> gK kgJ
-nnoremap <silent> <Leader>d :DiffChangesDiffToggle<CR>
-
-" Allows use of w!! to edit file that required root after ropening without sudo
-cmap w!! w !sudo tee % >/dev/null
-
-
-" }}}
-
-" Motions {{{
-" ===================================================
-
-nnoremap <expr> n 'Nn'[v:searchforward] . 'zzzv'
-nnoremap <expr> N 'nN'[v:searchforward] . 'zzzv'
-
-" 0 indicates backward, 1 indicates forward, -1 indicates inconclusive
-function! s:CheckDirection(motion, ord)
-  let oldpos = getcurpos()
-  exe 'norm! ' . a:motion
-  let newpos = getcurpos()
-
-  let direction = -1
-  if oldpos[2] != newpos[2]
-    call setpos('.', oldpos)
-    exe 'let direction = (oldpos[2] ' . a:ord . ' newpos[2])'
-  endif
-  return direction
-endfunction
-
-function! s:MoveAbsoluteDirection(forward)
-  " Determine direction semicolon and comma moves towards
-  let direction = s:CheckDirection(';', '<')
-  if direction == -1
-    let direction = s:CheckDirection(',', '>')
-  endif
-  if direction != -1
-    exe 'norm! ' . (a:forward != direction ? ',' : ';')
-  endif
-endfunction
-
-nnoremap <silent> ; :call <SID>MoveAbsoluteDirection(1)<CR>
-nnoremap <silent> , :call <SID>MoveAbsoluteDirection(0)<CR>
-
-" Allow adding and subtracting next number in both directions across lines.
-function! s:AddSubtract(char, back)
-  call search('[[:digit:]]', 'cw' . a:back)
-  exe 'norm! ' . v:count1 . a:char
-  silent! call repeat#set( \
-      ":\<C-u>call AddSubtract('" . a:char . "', '" . a:back . "')\<CR>")
-endfunction
-
-nnoremap <silent> <C-a> :<C-u>call <SID>AddSubtract("\<C-a>", '')<CR>
-nnoremap <silent> <Leader><C-a> :<C-u>call <SID>AddSubtract("\<C-a>", 'b')<CR>
-nnoremap <silent> <C-x> :<C-u>call <SID>AddSubtract("\<C-x>", '')<CR>
-nnoremap <silent> Leader<C-x> :<C-u>call <SID>AddSubtract("\<C-x>", 'b')<CR>
-
-
-" }}}
-
-" Neomake {{{
-" ===================================================
-
-autocmd BufWritePost * Neomake
-
-let g:neomake_verbose = 0
-let g:neomake_cpp_enable_makers = ['gcc']
-let g:neomake_cpp_gcc_maker = { 'exe' : 'g++' }
-
-
-" }}}
-
-" NetRW {{{
-" ===================================================
-
-" Add numbers to NetRW
-let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
-let g:netrw_banner = 1
-
-
-" }}}
-
-" Restoration {{{
-" ===================================================
-
-" Tell nvim to remember certain things when exiting
-"  '1000 : Number of files for which one saves marks
-"  f1    : Controls whether global marks are stored
-"  <500  : # of lines for each register
-"  :500  : # of lines in cmd line history
-"  @500  : # of lines to save from input line history
-"  /500  : # of lines to save from search history
-"  n     : Name used for ShaDa file
-set shada='1000,f1,<500,:500,@500,/500,n$NVIM_DIR/.shada
-
-function! s:SaveCursorPosition()
-  if line("'\"") > 1 && line("'\"") <= line("$")
-    exe "normal! g`\""
-  endif
-endfunction
-
-" Save the cursor position
-autocmd BufRead * call <SID>SaveCursorPosition()
-
-
-" }}}
-
-" Sessions {{{
-" ===================================================
-" Convenience function to avoid writing NVIM_DIR repeatedly
-
-let s:sessions_path = $NVIM_DIR . '/sessions/'
-
-function s:ListSessions(ArgLead, CmdLine, CursorPos)
-  if !isdirectory(s:sessions_path)
-    return ''
-  endif
-  return system('ls ' . s:sessions_path)
-endfunction
-
-function! s:SaveSessionAs(name)
-  if !isdirectory(s:sessions_path)
-    call mkdir(s:sessions_path)
-  endif
-  exec 'mksession! ' . s:sessions_path . a:name
-endfunction
-
-function! s:LoadSavedSession(name)
-  let path = s:sessions_path . a:name
-  if filereadable(path)
-    exec 'source ' . path
-  endif
-endfunction
-
-function! s:DeleteSavedSession(name)
-  let path = s:sessions_path . a:name
-  if filereadable(path)
-    call delete(path)
-  endif
-endfunction
-
-command -nargs=1 -complete=custom,<SID>ListSessions SSA :call <SID>SaveSessionAs(<f-args>)
-command -nargs=1 -complete=custom,<SID>ListSessions LSS :call <SID>LoadSavedSession(<f-args>)
-command -nargs=1 -complete=custom,<SID>ListSessions DSS :call <SID>DeleteSavedSession(<f-args>)
-
-
-" }}}
-
-" Settings {{{
-" ===================================================
-
-set backspace=indent,eol,start
-set expandtab
+set hidden
 set matchpairs+=<:>
-set noerrorbells
 set noshowmode
-set notimeout
-set nowrap
 set number
 set relativenumber
-set ruler
-set scrolloff=1
-set shiftwidth=4
-set showcmd
-set sidescrolloff=5
-set smartcase
-set splitright
-set tabstop=4
+set shada='100,f1,<50,:50,@50,/50,n$NVIM_DIR/.shada
+set shiftwidth=2
+set tabstop=2
 set textwidth=80
-set updatetime=500
+set updatetime=250
 
+" g:plugs is defined in *plug#begin and is used internally by plug.vim. Though
+" not explicitly documented, piggybacking off its functionality to test for
+" proper installation of the given plugins.
+if exists('g:plugs') && type(g:plugs) == v:t_dict
 
-" }}}
+  " Contains a mapping for statusline notifications during the running of
+  " asynchronous jobs initiated by plugins. These will be displayed onto the
+  " warning section of airline.
+  let s:statusline_async = {}
 
-" Startify {{{
-" ===================================================
+  if has_key(g:plugs, 'vim-gutentags')
+    let g:gutentags_project_root = ['tags']
+    function! s:statusline_async.gutentags()
+      return gutentags#statusline("\uf02b")
+    endfunction
+  endif
 
-let g:startify_custom_header = [
-      \ '     ________   ___      ___ ___  _____ ______            ', 
-      \ '     |\   ___  \|\  \    /  /|\  \|\   _ \  _   \         ', 
-      \ '     \ \  \\ \  \ \  \  /  / | \  \ \  \\\__\ \  \        ',
-      \ '      \ \  \\ \  \ \  \/  / / \ \  \ \  \\|__| \  \       ',
-      \ '       \ \  \\ \  \ \    / /   \ \  \ \  \    \ \  \      ',
-      \ '        \ \__\\ \__\ \__/ /     \ \__\ \__\    \ \__\     ',
-      \ '         \|__| \|__|\|__|/       \|__|\|__|     \|__|     ',
-      \ ]
+  if has_key(g:plugs, 'neomake')
+    let g:neomake_open_list = 2
+    call s:cabbrev(['mak', 'make'], 'Neomake')
+    function! s:statusline_async.neomake()
+      redir => l:background_jobs
+      call neomake#ListJobs()
+      redir END
+      return empty(l:background_jobs) ? '' : "\uf0ad"
+    endfunction
+  endif
 
-let g:startify_session_dir = '$NVIM_DIR/sessions'
+  if has_key(g:plugs, 'vim-fugitive')
+    augroup FugitiveInit
+      autocmd!
+      " Clean up fugitive buffers when navigating commit tree
+      autocmd BufReadPost fugitive://* set bufhidden=delete
+    augroup END
+  endif
 
+  if has_key(g:plugs, 'fzf')
+    let g:fzf_action = {
+          \ 'ctrl-t': 'tab split',
+          \ 'ctrl-s': 'split',
+          \ 'ctrl-v': 'vsplit'
+          \ }
+    nnoremap <silent> <C-p><C-n> :Buffers<CR>
+    nnoremap <silent> <C-p><C-p> :FZF<CR>
+    nnoremap <silent> <C-p><C-j> :Tags<CR>
+    nnoremap <silent> <C-p><C-k> :BTags<CR>
+  endif
 
-" }}}
-
-" Tags {{{
-" ===================================================
-
-nmap <silent> <C-]> :exe 'tag ' . expand('<cword>')<CR>zzzv<CR>
-nmap <silent> <C-t> :exe "norm! \<C-t>zzzv"<CR>
-nmap <silent> <C-g> :ta<CR>zzzv
-
-
-" }}}
-
-" Undo Tree {{{
-" ===================================================
-
-nmap <silent> <C-w>u :UndotreeToggle<CR>
-
-
-" }}}
-
+  if has_key(g:plugs, 'vim-airline')
+    let g:airline_powerline_fonts = 1
+    " This is the function that actually performs the generation of the
+    " asynchronous job display.  By running each check for asynchronous jobs
+    " in one single function, we can properly control the spacing of the
+    " statusline objects (by using join() on all nonempty status results).
+    function! g:AsyncRunning()
+      let l:statuses = []
+      for key in sort(keys(s:statusline_async))
+        let l:result = s:statusline_async[key]()
+        if !empty(l:result)
+          call add(l:statuses, l:result)
+        endif
+      endfor
+      return join(l:statuses)
+    endfunction
+    call airline#parts#define_function('async', 'g:AsyncRunning')
+    let g:airline_section_warning = airline#section#create(['async'])
+  endif
+endif
 
