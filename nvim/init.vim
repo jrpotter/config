@@ -23,10 +23,12 @@ if exists('*plug#begin')
   Plug 'airblade/vim-gitgutter'
   Plug 'ludovicchabant/vim-gutentags'
   Plug 'jrpotter/vim-fugitive'
+  Plug 'jrpotter/vim-highlight'
   Plug 'jrpotter/vim-unimpaired'
   Plug 'junegunn/fzf', { 'do': './install --bin' }
   Plug 'junegunn/fzf.vim'
   Plug 'justinmk/vim-dirvish'
+  Plug 'justinmk/vim-sneak'
   Plug 'neomake/neomake'
   Plug 'tpope/vim-surround'
   Plug 'vim-airline/vim-airline'
@@ -50,20 +52,15 @@ hi MatchParen   cterm=bold   ctermfg=White  ctermbg=Black
 
 let mapleader = "\<Space>"
 
-nnoremap '          `
-nnoremap `          '
-nnoremap g'         g`
-nnoremap g`         g'
-nnoremap 0          ^
-nnoremap ^          0
+noremap  0          ^
+noremap  ^          0
+noremap  '          `
+noremap  `          '
 nnoremap j          gj
 nnoremap k          gk
-nnoremap K          kJ
-nnoremap gK         kgJ
 nnoremap <BS>       <C-^>
 nnoremap <Space>    <NOP>
 nnoremap <C-g>      :tag<CR>
-
 nnoremap <Leader>ve :e $MYVIMRC<CR>
 nnoremap <Leader>vr :so $MYVIMRC<CR>
 
@@ -90,11 +87,13 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
   " Contains a mapping for statusline notifications during the running of
   " asynchronous jobs initiated by plugins. These will be displayed onto the
   " warning section of airline.
-  let s:statusline_async = {}
+  let s:statusline_plugins = { 'y'       : { },
+                             \ 'warning' : { },
+                             \ }
 
   if has_key(g:plugs, 'vim-gutentags')
     let g:gutentags_project_root = ['tags']
-    function! s:statusline_async.gutentags()
+    function! s:statusline_plugins.warning.gutentags()
       return gutentags#statusline("\uf02b")
     endfunction
   endif
@@ -102,7 +101,7 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
   if has_key(g:plugs, 'neomake')
     let g:neomake_open_list = 2
     call s:cabbrev(['mak', 'make'], 'Neomake')
-    function! s:statusline_async.neomake()
+    function! s:statusline_plugins.warning.neomake()
       redir => l:background_jobs
       call neomake#ListJobs()
       redir END
@@ -116,6 +115,12 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
       " Clean up fugitive buffers when navigating commit tree
       autocmd BufReadPost fugitive://* set bufhidden=delete
     augroup END
+  endif
+
+  if has_key(g:plugs, 'vim-highlight')
+    function! s:statusline_plugins.y.highlight()
+      return highlight#statusline()
+    endfunction
   endif
 
   if has_key(g:plugs, 'fzf')
@@ -132,22 +137,35 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
 
   if has_key(g:plugs, 'vim-airline')
     let g:airline_powerline_fonts = 1
-    " This is the function that actually performs the generation of the
-    " asynchronous job display.  By running each check for asynchronous jobs
-    " in one single function, we can properly control the spacing of the
-    " statusline objects (by using join() on all nonempty status results).
-    function! g:AsyncRunning()
+    " This is the function that actually performs the generation of the async
+    " statusline.  By running each check for all jobs in one single function,
+    " we can properly control the spacing of the statusline objects (by using
+    " join() on all nonempty status results).
+    function! s:PollStatusline(section)
       let l:statuses = []
-      for key in sort(keys(s:statusline_async))
-        let l:result = s:statusline_async[key]()
+      for key in sort(keys(s:statusline_plugins[a:section]))
+        let l:result = s:statusline_plugins[a:section][key]()
         if !empty(l:result)
           call add(l:statuses, l:result)
         endif
       endfor
       return join(l:statuses)
     endfunction
-    call airline#parts#define_function('async', 'g:AsyncRunning')
-    let g:airline_section_warning = airline#section#create(['async'])
+
+    " Construction of the 'y' segment. This requires manually setting the
+    " vim-highlight value to ensure proper highlighting.
+    function! g:PollYStatusline()
+      return s:PollStatusline('y')
+    endfunction
+    let g:airline_section_y = airline#section#create_right(
+          \ [ 'ffenc', '%#Search#%{g:PollYStatusline()}%#__restore__#'])
+
+    " Construction of the 'warning' segment.
+    function! g:PollWarningStatusline()
+      return s:PollStatusline('warning')
+    endfunction
+    call airline#parts#define_function('warning', 'g:PollWarningStatusline')
+    let g:airline_section_warning = airline#section#create(['warning'])
   endif
 endif
 
