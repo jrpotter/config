@@ -42,13 +42,13 @@ augroup TerminalInit
   autocmd TermOpen * setlocal foldcolumn=0
 augroup END
 
-hi ColorColumn  cterm=bold   ctermfg=White  ctermbg=Black
-hi DiffAdd      cterm=bold   ctermfg=White  ctermbg=Green
-hi DiffChange   cterm=bold   ctermfg=White  ctermbg=Blue
-hi DiffDelete   cterm=bold   ctermfg=White  ctermbg=Red
-hi FoldColumn   ctermfg=Blue ctermbg=none
-hi Folded       cterm=bold   ctermfg=White  ctermbg=Black
-hi MatchParen   cterm=bold   ctermfg=White  ctermbg=Black
+hi ColorColumn  cterm=bold        ctermfg=White  ctermbg=Black
+hi DiffAdd      cterm=bold        ctermfg=White  ctermbg=Green
+hi DiffChange   cterm=bold        ctermfg=White  ctermbg=Blue
+hi DiffDelete   cterm=bold        ctermfg=White  ctermbg=Red
+hi FoldColumn   ctermfg=LightBlue ctermbg=none
+hi Folded       cterm=bold        ctermfg=White  ctermbg=Black
+hi MatchParen   cterm=bold        ctermfg=White  ctermbg=Black
 
 let mapleader = "\<Space>"
 
@@ -157,8 +157,10 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
     function! g:PollYStatusline()
       return s:PollStatusline('y')
     endfunction
+    " Note the highlight group must match g:highlight_register_prefix defined in
+    " vim-highlight.
     let g:airline_section_y = airline#section#create_right(
-          \ [ 'ffenc', '%#Search#%{g:PollYStatusline()}%#__restore__#'])
+          \ [ 'ffenc', '%#HighlightRegister#%{g:PollYStatusline()}%#__restore__#'])
 
     " Construction of the 'warning' segment.
     function! g:PollWarningStatusline()
