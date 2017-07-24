@@ -64,6 +64,9 @@ nnoremap <C-g>      :tag<CR>
 nnoremap <Leader>ve :e $MYVIMRC<CR>
 nnoremap <Leader>vr :so $MYVIMRC<CR>
 
+" Replace current buffer with new one.
+command -nargs=1 -bang Br edit<bang> <args> <Bar> bd<bang> #
+
 set expandtab
 set foldcolumn=3
 set foldlevel=99
