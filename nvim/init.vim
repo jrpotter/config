@@ -74,6 +74,7 @@ set foldmethod=syntax
 set hidden
 set matchpairs+=<:>
 set noshowmode
+set nostartofline
 set number
 set relativenumber
 set shada='100,f1,<50,:50,@50,/50,n$NVIM_DIR/.shada
