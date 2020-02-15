@@ -1,15 +1,5 @@
 let $NVIM_DIR = expand('~/.config/nvim/')
 
-" Utility method to replace all words in the a:abbrs array with expr if any of
-" said words appear first in the command line.
-function! s:cabbrev(abbrs, expr)
-  let l:cmd = '<C-r>=(getcmdpos() == 1 && getcmdtype() == ":")'
-  for key in a:abbrs
-    let l:ternary = l:cmd . ' ? "' . a:expr . '" : "' . key
-    execute 'cabbrev ' . key . ' ' . l:ternary . '"<CR>'
-  endfor
-endfunction
-
 if !filereadable(expand('$NVIM_DIR/autoload/plug.vim'))
   echohl WarningMsg | echo 'vim-plug not installed. Installing...' | echohl None
   silent !curl -fLo $NVIM_DIR/autoload/plug.vim --create-dirs
@@ -21,16 +11,14 @@ runtime autoload/plug.vim
 if exists('*plug#begin')
   call plug#begin('$NVIM_DIR/plugged')
   Plug 'airblade/vim-gitgutter'
-  Plug 'ludovicchabant/vim-gutentags'
-  Plug 'jrpotter/vim-fugitive'
   Plug 'jrpotter/vim-highlight'
-  Plug 'jrpotter/vim-unimpaired'
   Plug 'junegunn/fzf', { 'do': './install --bin' }
   Plug 'junegunn/fzf.vim'
   Plug 'justinmk/vim-dirvish'
   Plug 'justinmk/vim-sneak'
   Plug 'neomake/neomake'
   Plug 'tpope/vim-surround'
+  Plug 'tpope/vim-unimpaired'
   Plug 'vim-airline/vim-airline'
   call plug#end()
 else
@@ -91,27 +79,7 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
   " Contains a mapping for statusline notifications during the running of
   " asynchronous jobs initiated by plugins. These will be displayed onto the
   " warning section of airline.
-  let s:statusline_plugins = { 'y'       : { },
-                             \ 'warning' : { },
-                             \ }
-
-  if has_key(g:plugs, 'vim-gutentags')
-    let g:gutentags_project_root = ['tags']
-    function! s:statusline_plugins.warning.gutentags()
-      return gutentags#statusline("\uf02b")
-    endfunction
-  endif
-
-  if has_key(g:plugs, 'neomake')
-    let g:neomake_open_list = 2
-    call s:cabbrev(['mak', 'make'], 'Neomake')
-    function! s:statusline_plugins.warning.neomake()
-      redir => l:background_jobs
-      call neomake#ListJobs()
-      redir END
-      return empty(l:background_jobs) ? '' : "\uf0ad"
-    endfunction
-  endif
+  let s:statusline_plugins = { 'y': { }, 'warning': { } }
 
   if has_key(g:plugs, 'vim-fugitive')
     augroup FugitiveInit
@@ -155,7 +123,6 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
       endfor
       return join(l:statuses)
     endfunction
-
     " Construction of the 'y' segment. This requires manually setting the
     " vim-highlight value to ensure proper highlighting.
     function! g:PollYStatusline()
@@ -165,7 +132,6 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
     " vim-highlight.
     let g:airline_section_y = airline#section#create_right(
           \ [ 'ffenc', '%#HighlightRegister#%{g:PollYStatusline()}%#__restore__#'])
-
     " Construction of the 'warning' segment.
     function! g:PollWarningStatusline()
       return s:PollStatusline('warning')
@@ -173,5 +139,5 @@ if exists('g:plugs') && type(g:plugs) == v:t_dict
     call airline#parts#define_function('warning', 'g:PollWarningStatusline')
     let g:airline_section_warning = airline#section#create(['warning'])
   endif
-endif
 
+endif
