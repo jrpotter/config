@@ -68,7 +68,6 @@ set relativenumber
 set shada='100,f1,<50,:50,@50,/50,n$NVIM_DIR/.shada
 set shiftwidth=2
 set tabstop=2
-set textwidth=80
 set updatetime=250
 
 " g:plugs is defined in *plug#begin and is used internally by plug.vim. Though
