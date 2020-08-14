@@ -11,6 +11,7 @@ runtime autoload/plug.vim
 if exists('*plug#begin')
   call plug#begin('$NVIM_DIR/plugged')
   Plug 'airblade/vim-gitgutter'
+  Plug 'dense-analysis/ale'
   Plug 'jrpotter/vim-highlight'
   Plug 'junegunn/fzf', { 'do': './install --bin' }
   Plug 'junegunn/fzf.vim'
